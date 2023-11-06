@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "MongoDB CRUD Operations",
+      "setup": "pip install -r api/requirements.txt",
+      "run": "PYTHONPATH=$(pwd)/api/v1 pytest -m crud_operations",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 25
+    },
+    {
+      "name": "User Service",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/api/v1 pytest -m user_service",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 20
+    },
+    {
+      "name": "Project Service",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/api/v1 pytest -m project_service",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 30
+    },
+    {
+      "name": "Template Service",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/api/v1 pytest -m template_service",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 70
+    }
+  ]
+}
