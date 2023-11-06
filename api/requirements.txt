@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+pymongo
+python-dotenv
+neo4j
+passlib
+python-multipart
+python-jose
+pytest
+httpx
+pytest-asyncio
+requests

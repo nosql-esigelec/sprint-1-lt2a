@@ -1,0 +1,48 @@
+
+.template-card {
+    display: flex;
+
+    border: 1px solid #ccc ;
+    border-radius: 5px;
+    padding: 1em;
+    margin: 1em;
+    flex-direction: column;
+  }
+  
+  .header-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  
+  .body-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .info-column {
+    flex: 1;
+    /* width: 50%; */
+  }
+  
+  .actions-column {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+  .evops-btn{
+    margin: 5px;
+  }
+
+
+  .tree-container {
+    display: none;
+
+  }
+  
+.tree-container.show {
+    display: block;
+  }
+  
