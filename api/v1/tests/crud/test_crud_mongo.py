@@ -1,6 +1,7 @@
 import pytest
-from src.dependencies import get_mongo_db
-# Setup MongoDB test database
+from api.v1.src.dependencies import get_mongo_db
+from pymongo.errors import OperationFailure
+# Setup MongoDB test databasepw
 
 
 @pytest.fixture(scope='module')
@@ -16,47 +17,62 @@ def test_mongo_instance(mongo_instance):
 
 @pytest.mark.crud_operations
 def test_create_index(mongo_instance):
-    mongo_instance.drop_index("users", "username_1")
-    index_name = mongo_instance.create_index("users", "username", unique=True).get("result")
+    users_collection = mongo_instance["users"]
+    try:
+        users_collection.drop_index("username_1")
+    except OperationFailure:
+        pass 
+    index_name = users_collection.create_index([("username", 1)], unique=True)
     assert index_name == "username_1"
 
 @pytest.mark.crud_operations
 def test_create(mongo_instance):
-    mongo_instance.drop_collection("users")
-    document = {"username":"johnny", "name": "John", "age": 30}
-    result = mongo_instance.create(document, "users").get("result")
-    assert isinstance(result, str)
-    assert len(result) == 24
-    
+    users_collection = mongo_instance["users"]
+    users_collection.drop()
+    document = {"username": "johnny", "name": "John", "age": 30}
+    insert_result = users_collection.insert_one(document)
+    assert insert_result.inserted_id is not None
+    assert isinstance(str(insert_result.inserted_id), str)
+    assert len(str(insert_result.inserted_id)) == 24
 
 @pytest.mark.crud_operations
 def test_read(mongo_instance):
+    users_collection = mongo_instance["users"]
     query = {"name": "John"}
-    result = mongo_instance.read(query, "users").get("result")
+    result = users_collection.find_one(query)
     assert isinstance(result, dict)
     assert result['name'] == "John"
 
 @pytest.mark.crud_operations
 def test_update(mongo_instance):
+    # Access the 'users' collection
+    users_collection = mongo_instance["users"]
+
+    # Prepare the query and update data
     query = {"name": "John"}
-    update_data = {"age": 31}
-    modified_count = mongo_instance.update(query, update_data, "users").get("result")
-    assert modified_count > 0
+    update_data = {"$set": {"age": 31}}  # Use $set for updating fields
+    update_result = users_collection.update_one(query, update_data)
+    assert update_result.modified_count > 0
 
     # Validate update
-    updated_document = mongo_instance.read(query, "users").get("result")
-    print(f"Updated document: {updated_document}")
+    updated_document = users_collection.find_one(query)
+    assert updated_document is not None
     assert updated_document['age'] == 31
 
 @pytest.mark.crud_operations
 def test_delete(mongo_instance):
+    # Access the 'users' collection
+    users_collection = mongo_instance["users"]
+
+    # Prepare the query
     query = {"name": "John"}
-    deleted_count = mongo_instance.delete(query, "users").get("result")
-    assert deleted_count > 0
+
+    # Delete the document
+    delete_result = users_collection.delete_one(query)
+    assert delete_result.deleted_count > 0
 
     # Validate deletion
-    result = mongo_instance.read(query, "users").get("result")
+    result = users_collection.find_one(query)
     assert result is None
-
 
 
