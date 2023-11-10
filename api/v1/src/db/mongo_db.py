@@ -8,12 +8,12 @@ Classes:
 
 """
 
-import logging
+#import logging
 from typing import Optional, List, Union
-import datetime
-from bson.objectid import ObjectId
-from pymongo import errors
-from utils.handlers import handle_db_operations
+#import datetime
+#from bson.objectid import ObjectId
+#from pymongo import errors
+from api.v1.src.utils.handlers import handle_db_operations
 
 
 class MongoDB:
@@ -28,7 +28,9 @@ class MongoDB:
         self.db = db
 
     @handle_db_operations
-    def drop_collection(self, collection_name: str) -> dict:
+    def drop_collection(self,
+                        collection_name: str
+                        ) -> dict:
         """
         Drop a collection from the database.
 
@@ -43,7 +45,9 @@ class MongoDB:
         return drop_result
     
     @handle_db_operations
-    def drop_database(self, database_name: str) -> dict:
+    def drop_database(self,
+                      database_name: str
+                      ) -> dict:
         """
         Drop a database from the database.
 
@@ -58,7 +62,10 @@ class MongoDB:
         return drop_result
 
     @handle_db_operations
-    def drop_index(self, collection_name: str, index_name: str) -> dict:
+    def drop_index(self,
+                   collection_name: str,
+                   index_name: str
+                   ) -> dict:
         """
         Drop an index from the collection.
 
@@ -75,7 +82,10 @@ class MongoDB:
 
     @handle_db_operations
     def create_index(
-        self, collection_name: str, field: str, unique: bool = False
+        self,
+        collection_name: str,
+        field: str,
+        unique: bool = False
     ) -> dict:
         """
         Create an index on the `collection` for the `field`.
@@ -83,18 +93,22 @@ class MongoDB:
         Args:
             collection_name (str): The collection name.
             field (str): The field name.
+            unique (bool, optional): The uniqueness of the index.
 
         Returns:
             str: The name of the index.
         """
-        # TODO(mongo): Create Index
-        # (fixme, mongo): Implement the method to create an index on the collection for the field.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/indexes/
-        index_name = "placeholder"
+
+        collection = self.db[collection_name]
+        index_name = collection.create_index([(field, 1)], unique=unique)
         return index_name
     
     @handle_db_operations
-    def create(self, document_data: dict, collection_name: str, many: bool = False) -> Union[str, List[str]]:
+    def create(self,
+               document_data: dict,
+               collection_name: str,
+               many: bool = False
+               ) -> Union[str, List[str]]:
         """
         Create a document in a collection in the database.
         Used for create_org, create_project
@@ -107,11 +121,13 @@ class MongoDB:
         Returns:
             Union[str, List[str]]: The inserted document's ID or list of IDs.
         """
-        # TODO(mongo): Create Document(s)
-        # (fixme, mongo): Implement the method to create a new document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/insert-documents/
-        insert_result = "placeholder"
-        return insert_result
+        collection = self.db[collection_name]
+        if many:
+            insert_result = collection.insert_many(document_data)
+            return [str(doc_id) for doc_id in insert_result.inserted_ids]
+        else:
+            insert_result = collection.insert_one(document_data)
+            return str(insert_result.inserted_id)
 
     @handle_db_operations
     def read(
@@ -125,7 +141,7 @@ class MongoDB:
         skip: Optional[int] = None,
     ) -> Union[dict, List[dict]]:
         """
-        Read a document(s) from the specified collection based on the query.
+        Read one or more document(s) from the specified collection based on the query.
 
         Args:
             query (dict): The query of the document to be retrieved.
@@ -139,12 +155,20 @@ class MongoDB:
         Returns:
             Union[dict, List[dict]]: The retrieved document(s).
         """
-        # TODO(mongo): Read Document(s)
-        # (fixme, mongo): Implement the method to read a document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/query-documents/
-        
-        document = {} or [{},{}] #placeholder
-        return document
+
+        collection = self.db[collection_name]
+        if many:
+            cursor = collection.find(query, projection)
+            if sort:
+                cursor = cursor.sort(sort)
+            if skip is not None:
+                cursor = cursor.skip(skip)
+            cursor = cursor.limit(limit)
+            documents = list(cursor)
+            return documents
+        else:
+            document = collection.find_one(query, projection)
+            return document
 
     @handle_db_operations
     def update(
@@ -166,16 +190,26 @@ class MongoDB:
         Returns:
             int: The number of modified documents.
         """
-        # TODO(mongo): Update Document(s)
-        # (fixme, mongo): Implement the method to update a document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/update-documents/
-        if update_type not in ["set", "push", "pull", "unset", "inc"]:
-            return {"success": False, "message": "Invalid update type"}
-        
+
         collection = self.db[collection_name]
-        
-        documents_updated_count = 0 #placeholder
+
+        if update_type == "set":
+            update_operation = {"$set": document_data}
+        if update_type == "push":
+            update_operation = {"$push": document_data}
+        if update_type == "pull":
+            update_operation = {"$pull": document_data}
+        if update_type == "unset":
+            update_operation = {"$unset": document_data}
+        if update_type == "inc":
+            update_operation = {"$inc": document_data}
+        else:
+            return {"success": False, "message": "Invalid update type"}
+
+        result = collection.update_many(query, update_operation)
+        documents_updated_count = result.modified_count
         return documents_updated_count
+
     @handle_db_operations
     def delete(self, query: dict, collection_name: str, many: bool = False) -> int:
         """
@@ -192,5 +226,12 @@ class MongoDB:
         # TODO(mongo): Delete Document(s) 
         # (fixme, mongo): Implement the method to delete a document or many documents in the database.
         # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/remove-documents/
-        documents_deleted_count = 0 #placeholder
+
+        collection = self.db[collection_name]
+        if many:
+            result = collection.delete_many(query)
+        else:
+            result = collection.delete_one(query)
+
+        documents_deleted_count = result.deleted_count
         return documents_deleted_count
