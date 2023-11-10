@@ -13,7 +13,7 @@ from typing import Optional, List, Union
 import datetime
 from bson.objectid import ObjectId
 from pymongo import errors
-from src.utils.handlers import handle_db_operations
+from utils.handlers import handle_db_operations
 
 
 class MongoDB:
