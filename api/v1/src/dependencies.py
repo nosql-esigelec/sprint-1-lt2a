@@ -23,20 +23,3 @@ def get_neo4j_db():
 
 from pymongo import MongoClient, ServerApi
 
-def get_mongo_db(database_name="gocod"):
-    """
-    Returns a MongoDB database instance.
-
-    Args:
-        database_name (str): The name of the database to connect to. Defaults to "gocod".
-
-    Returns:
-        pymongo.database.Database: The MongoDB database instance.
-    """
-    client = MongoClient(mongo_uri, server_api=ServerApi('1'))
-    try:
-        client.admin.command('ping')
-    except Exception as e:
-        print(e)
-    gocod_db = client[database_name]
-    return gocod_db
