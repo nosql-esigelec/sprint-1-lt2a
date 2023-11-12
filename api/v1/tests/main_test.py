@@ -1,10 +1,11 @@
+#type: ignore 
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from src.models.user import UserLogged
-from src.main import router as v1_router
-from src.utils.oauth import get_current_user
+from api.v1.src.models.user import UserLogged
+from api.v1.src.main import router as v1_router
+from api.v1.src.utils.oauth import get_current_user
 
 
 
