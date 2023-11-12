@@ -1,8 +1,8 @@
 from httpx import get
 import pytest
-from src.dependencies import get_mongo_db
-from src.dependencies import get_neo4j_db
-from src.services.projects_service import ProjectService  
+from api.v1.src.dependencies import get_mongo_db
+from api.v1.src.dependencies import get_neo4j_db
+from api.v1.src.services.projects_service import ProjectService  
 
 
 # Setup ProjectService instance
