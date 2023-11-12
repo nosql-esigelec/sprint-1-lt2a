@@ -1,10 +1,10 @@
 import pytest
 from bson.objectid import ObjectId
 from api.v1.tests.services.test_user_service import user_service_instance
-from src.services.templates_service import TemplateService
-from src.services.users_service import UserService
-from src.utils.handlers import random_string
-from src.dependencies import get_mongo_db, get_neo4j_db
+from api.v1.src.services.templates_service import TemplateService
+from api.v1.src.services.users_service import UserService
+from api.v1.src.utils.handlers import random_string
+from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
 
 @pytest.fixture(scope='module')
 def mongo_instance():
@@ -14,13 +14,16 @@ def mongo_instance():
 
 @pytest.fixture(scope='module')
 def neo4j_instance():
-    neo4j = get_neo4j_db()
-    yield neo4j
+    #neo4j = get_neo4j_db()
+    #yield neo4j
+    pass
 
 
 @pytest.fixture(scope='module')
-def template_service_instance(mongo_instance, neo4j_instance):
-    return TemplateService(mongo=mongo_instance, neo4j=neo4j_instance)
+def template_service_instance(mongo_instance#, neo4j_instance
+                            ):
+    return TemplateService(mongo=mongo_instance#, neo4j=neo4j_instance
+                        )
 mongo = get_mongo_db('test_db')
 user_service_instance = UserService(db=mongo)
 user_id = user_service_instance.create_user({"username": "John", "password": "secure_password"}).get("result")
@@ -124,4 +127,3 @@ def test_star_template(template_service_instance):
     
     assert starred_template is not None
     assert starred_template[0]["template_name"] == template_name    
-
