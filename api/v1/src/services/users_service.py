@@ -1,3 +1,4 @@
+#type: ignore 
 """
 User Service
 """
@@ -5,19 +6,20 @@ User Service
 import logging
 from bson.objectid import ObjectId
 from pymongo import errors
-from src.db.mongo_db import MongoDB
-from src.utils.handlers import handle_db_operations
+from api.v1.src.db.mongo_db import MongoDB
+from api.v1.src.utils.handlers import handle_db_operations
 
 
 class UserService:
     """
     Class to manage user operations.
     """
-    def __init__(self, db):
+    def __init__(self, db: MongoDB):
         self.db = db
+        # self.neo4j = neo4j
     
     @handle_db_operations
-    def create_user(self, user_data: dict):
+    def create_user(self, user_data: dict) -> str:
         """
         Create a user with the `user_data` object.
         An org with the name of the user should be created if an organization
@@ -29,22 +31,40 @@ class UserService:
         Returns:
             str: The ID of the inserted user.
         """
-        # TODO(mongo): Create a new user.
-        # If "org_name" is not in user_data, create an organization with the name of the user.
-        # Create the user with the organization ID.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/insert-documents/
-        if "org_name" not in user_data.keys():
-            org_data = "placeholder"
-        else:
-            org_data = {"org_name": user_data["org_name"]}
- 
-        # org_id = self.db.create(org_data, "orgs").get("result")
 
-        insert_result = "placeholder"
+        # Create an organization if "org_name" is not provided
+        if "org_name" not in user_data:
+            org_name = user_data.get("username")
+            user_data.update({"org_name": org_name})
+            org_id = self.db.create( 
+                document_data=user_data, 
+                collection_name=org_name
+            )
+        else:
+            # Assuming orgs are pre-existing and org_name uniquely identifies them
+            org_name = user_data["org_name"]
+            existing_org = self.db.read(
+                query={"org_name": org_name},
+                collection_name=org_name
+            )
+            org_id = existing_org.get("_id") if existing_org else None
+
+        if not org_id:
+            return "Organization not found"
+
+        # Update user data with org_id
+        user_data["org_id"] = org_id
+
+        # Create the user
+        insert_result = self.db.create(
+            document_data=user_data, 
+            collection_name="users"
+        )
+
         return insert_result
     
     @handle_db_operations
-    def authenticate_user(self, username: str, password: str):
+    def authenticate_user(self, username: str, password: str) -> dict:
         """
         Authenticate a user by username and password.
 
@@ -53,16 +73,23 @@ class UserService:
             password (str): The password of the user to be authenticated.
 
         Returns:
-            dict: The user data.
+            dict: The user data if authentication is successful, None otherwise.
         """
-        # TODO(mongo): Authenticate a user
-        # Implement the method to authenticate a user by username and password.
-        # You can use the `read` method of the MongoDB class to get a user by username and password.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/query-documents/
-        pass
+
+        # Query for user with matching username and password
+        user_data = self.db.read(
+            query={"username": username, "password": password},
+            collection_name="users"
+        )
+
+        # Check if user is found and return user data, else return None
+        if user_data:
+            return user_data
+        else:
+            return None
     
     @handle_db_operations
-    def read_user(self, user_id: str):
+    def read_user(self, user_id: str) -> dict:
         """
         Read a user with the `user_id` object.
 
@@ -70,14 +97,24 @@ class UserService:
             user_id (str): The user id to be read.
 
         Returns:
-            dict: The user data.
+            dict: The user data if found, None otherwise.
         """
-        # TODO(mongo): Read user by their user ID.
-        # Implement the method to read a user document given his user ID.
-        pass
+        try:
+            # Convert user_id to ObjectId
+            object_id = ObjectId(user_id)
+        except Exception:
+            return None  # or handle invalid user_id format
+
+        # Query the database for the user
+        user_data = self.db.read(
+            query={"_id": object_id},
+            collection_name="users"
+        )
+
+        return user_data
 
     @handle_db_operations
-    def get_user_by_username(self, username: str, projection: dict = None):
+    def get_user_by_username(self, username: str, projection: dict = None): #type: ignore 
         """
         Get a user by username.
 
