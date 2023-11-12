@@ -35,5 +35,6 @@ def get_mongo_db(database_name="gocod"):
         client.admin.command('ping')
     except Exception as e:
         print(e)
-    gocod_db = client[database_name]
-    return gocod_db
+    db = client[database_name]
+    
+    return MongoDB(db)
