@@ -77,8 +77,13 @@ class MongoDB:
             dict: A dictionary containing the operation's success status, message, and result.
         """
 
-        drop_result = self.db[collection_name].drop_index(index_name)
-        return drop_result
+        indexes = self.db[collection_name].index_information()
+        if index_name in indexes:
+        # If the index exists, drop it
+            drop_result = self.db[collection_name].drop_index(index_name)
+            return drop_result
+        else:
+            return {}
 
     @handle_db_operations
     def create_index(
@@ -202,7 +207,7 @@ class MongoDB:
         elif update_type == "inc":
             update_operation = {"$inc": document_data}
         else:
-            return {"success": False, "message": "Invalid update type"}
+            return -2
 
         try:
             # Perform the update operation
@@ -211,13 +216,13 @@ class MongoDB:
 
             # Return the number of documents updated
             if documents_updated_count > 0:
-                return {"success": True, "message": "Documents updated successfully", "result": documents_updated_count}
+                return documents_updated_count
             else:
-                return {"success": False, "message": "No documents updated", "result": documents_updated_count}
+                return 0
 
         except Exception as e:
             # If an error occurs, return an error message
-            return {"success": False, "message": str(e)}
+            return -1
 
     @handle_db_operations
     def delete(self, query: dict, collection_name: str, many: bool = False) -> int:
