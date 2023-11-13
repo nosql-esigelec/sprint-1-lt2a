@@ -1,5 +1,6 @@
 import pytest
 from bson.objectid import ObjectId
+import ast
 from api.v1.tests.services.test_user_service import user_service_instance
 from api.v1.src.services.templates_service import TemplateService
 from api.v1.src.services.users_service import UserService
@@ -18,18 +19,21 @@ def neo4j_instance():
     #yield neo4j
     pass
 
-
 @pytest.fixture(scope='module')
 def template_service_instance(mongo_instance#, neo4j_instance
                             ):
     return TemplateService(mongo=mongo_instance#, neo4j=neo4j_instance
                         )
-mongo = get_mongo_db('test_db')
-user_service_instance = UserService(db=mongo)
-user_id = user_service_instance.create_user({"username": "John", "password": "secure_password"}).get("result")
+    
+@pytest.fixture(scope='module')
+def user_id(mongo_instance):
+    user_service_instance = UserService(db=mongo_instance)
+    data = {"username": "John", "password": "secure_password"}
+    user_id = user_service_instance.create_user(user_data=data).get("result").get("result")
+    return user_id
 
 @pytest.mark.template_service
-def test_create_template(template_service_instance):
+def test_create_template(template_service_instance, user_id):
     template_name = "ReadTest"+random_string()
     template_data = {"template_name": template_name, "is_private": False, "created_by": user_id}
     print(f"Template data in creation: {template_data}")
@@ -39,26 +43,27 @@ def test_create_template(template_service_instance):
     # If the template is not private, it should be in the 'templates' collection
     if not template_data["is_private"]:
         inserted_template = template_service_instance.mongo.read(
-            query={"_id": ObjectId(result['value'])},
+            query={"_id": ObjectId(ast.literal_eval(result['value']).get('result', None))},
             collection_name="templates"
         ).get("result")
         assert inserted_template is not None
 
 @pytest.mark.template_service
-def test_read_template(template_service_instance):
+def test_read_template(template_service_instance, user_id):
     # You need to create a template first to test the read operation
     template_name = "ReadTest"+random_string()
     template_data = {"template_name": template_name, "is_private": False, "created_by": user_id}
     print(f"Template data in creation: {template_data}")
-    template_id = template_service_instance.create_template(template_data).get("result").get("value")
+    template_id = ast.literal_eval(template_service_instance.create_template(template_data)
+                                .get("result").get("value")).get('result', None)
     print(f"Template ID: {template_id}")
-    template = template_service_instance.read_template(template_id).get("result")
+    template = template_service_instance.read_template(template_id).get("result").get("result").get("result")
     print(f"Template: {template}")
     assert 'template_name' in template
     assert template['template_name'] == template_name
 
 @pytest.mark.template_service
-def test_list_templates(template_service_instance):
+def test_list_templates(template_service_instance, user_id):
 
     # You should create some templates first to test the listing
     for i in range(3):
@@ -68,7 +73,7 @@ def test_list_templates(template_service_instance):
             "created_by": user_id
         }).get("result")
 
-    templates = template_service_instance.list_templates(user_id).get("result")
+    templates = template_service_instance.list_templates(user_id)
 
     
     assert isinstance(templates, list)
@@ -84,7 +89,7 @@ def test_list_templates(template_service_instance):
     assert len(templates) >= 3  # Check if at least 3 templates were listed
 
 @pytest.mark.template_service
-def test_delete_template(template_service_instance):
+def test_delete_template(template_service_instance, user_id):
     # You need to create a template first to test the delete operation
     template_data = {"template_name": "DeleteTest"+random_string(), "is_private": False, "created_by": str(ObjectId())}
     template_id = template_service_instance.create_template(template_data).get("result").get("value")
@@ -101,7 +106,7 @@ def test_delete_template(template_service_instance):
     assert deleted_template is None
 
 @pytest.mark.template_service
-def test_delete_private_template(template_service_instance):
+def test_delete_private_template(template_service_instance, user_id):
     # You need to create a template first to test the delete operation
     template_data = {"template_name": "DeleteTest"+random_string(), "is_private": True, "created_by": user_id}
     template_id = template_service_instance.create_template(template_data).get("result").get("value")
@@ -115,7 +120,7 @@ def test_delete_private_template(template_service_instance):
     assert deleted_template is None
 
 @pytest.mark.template_service
-def test_star_template(template_service_instance):
+def test_star_template(template_service_instance, user_id):
     # You need to create a template first to test the star operation
     template_name = "StarTest"+random_string()
     template_data = {"template_name": template_name, "is_private": True, "created_by": user_id}
