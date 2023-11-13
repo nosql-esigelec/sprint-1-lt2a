@@ -28,10 +28,9 @@ def template_service_instance(mongo_instance #, neo4j_instance
 
 @pytest.fixture(scope="module")
 def user_id(mongo_instance):
-    user_service_instance = UserService(mongodb=mongo_instance)
+    user_service_instance = UserService(db=mongo_instance)
     data = {"username": "John", "password": "secure_password"}
-    response = user_service_instance.create_user(user_data=data)
-    user_id = response['result']['result']
+    user_id = user_service_instance.create_user(user_data=data).get("result").get("result")
     return user_id
 
 @pytest.mark.template_service
@@ -39,8 +38,7 @@ def test_create_template(template_service_instance, user_id):
     template_name = "ReadTest"+random_string()
     template_data = {"template_name": template_name, "is_private": False, "created_by": user_id}
     print(f"Template data in creation: {template_data}")
-    result = template_service_instance.create_template(template_data)
-    result = result['result']
+    result = template_service_instance.create_template(template_data).get("result")
     print(f"Result: {result}")
     assert 'value' in result
     value = result['value']
