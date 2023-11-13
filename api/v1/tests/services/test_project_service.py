@@ -10,7 +10,8 @@ from api.v1.src.services.projects_service import ProjectService
 def project_service_instance():
     mongo_instance = get_mongo_db('test_db')
     neo4j_instance = get_neo4j_db()
-    return ProjectService(mongo_instance, neo4j_instance)
+    return ProjectService(mongo_instance#, neo4j_instance
+                        )
 # Fixture to create a project and return its ID
 @pytest.fixture(scope='function')
 def project_id_fixture(project_service_instance):
@@ -45,5 +46,3 @@ def test_list_projects(project_service_instance):
     user_id = "some_user_id"
     projects = project_service_instance.list_projects(user_id).get("result")
     assert isinstance(projects, list)
-
-
