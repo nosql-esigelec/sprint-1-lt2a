@@ -14,8 +14,11 @@ class UserService:
     """
     Class to manage user operations.
     """
-    def __init__(self, db: MongoDB):
-        self.db = db
+    def __init__(self, 
+                mongodb
+                #  neo4j: Optional[Neo4jDB] = None
+            ):
+        self.mongo = MongoDB(mongodb)
         # self.neo4j = neo4j
     
     @handle_db_operations
@@ -36,14 +39,14 @@ class UserService:
         if "org_name" not in user_data:
             org_name = user_data.get("username")
             user_data.update({"org_name": org_name})
-            org_id = self.db.create( 
+            org_id = self.mongo.create( 
                 document_data=user_data, 
                 collection_name=org_name
             )
         else:
             # Assuming orgs are pre-existing and org_name uniquely identifies them
             org_name = user_data["org_name"]
-            existing_org = self.db.read(
+            existing_org = self.mongo.read(
                 query={"org_name": org_name},
                 collection_name=org_name
             )
@@ -56,7 +59,7 @@ class UserService:
         user_data["org_id"] = org_id
 
         # Create the user
-        insert_result = self.db.create(
+        insert_result = self.mongo.create(
             document_data=user_data, 
             collection_name="users"
         )
@@ -77,7 +80,7 @@ class UserService:
         """
 
         # Query for user with matching username and password
-        user_data = self.db.read(
+        user_data = self.mongo.read(
             query={"username": username, "password": password},
             collection_name="users"
         )
@@ -106,7 +109,7 @@ class UserService:
             return None  # or handle invalid user_id format
 
         # Query the database for the user
-        user_data = self.db.read(
+        user_data = self.mongo.read(
             query={"_id": object_id},
             collection_name="users"
         )
@@ -126,7 +129,7 @@ class UserService:
         """
         projection = projection or {}
 
-        user = self.db.read(
+        user = self.mongo.read(
             query={"username": username},
             collection_name="users",
             projection=projection,

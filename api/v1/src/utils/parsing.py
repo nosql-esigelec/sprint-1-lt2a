@@ -3,7 +3,7 @@ from typing import List, Union, Dict
 
 
 def parse_mongo_id(
-    data: Union[dict, list], document_type: str = "project", keep_id: bool = False
+    data: Union[Dict, List], document_type: str = "project", keep_id: bool = False
 ) -> Union[Dict, List[Dict]]:
     """
     Parse the mongo ID to the document ID.
