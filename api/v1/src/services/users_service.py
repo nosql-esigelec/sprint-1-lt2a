@@ -9,7 +9,6 @@ from pymongo import errors
 from api.v1.src.db.mongo_db import MongoDB
 from api.v1.src.utils.handlers import handle_db_operations
 
-
 class UserService:
     """
     Class to manage user operations.
@@ -61,7 +60,7 @@ class UserService:
             collection_name="users"
         )
 
-        return insert_result
+        return insert_result.get("result")
     
     @handle_db_operations
     def authenticate_user(self, username: str, password: str) -> dict:
@@ -84,9 +83,16 @@ class UserService:
 
         # Check if user is found and return user data, else return None
         if user_data:
-            return user_data
+            return user_data.get("result")
         else:
             return None
+    
+    def list_templates(self, user_id):
+        from api.v1.src.services.templates_service import TemplateService
+        list_templates = TemplateService(self.db).list_templates(user_id).get("result")
+
+        # Return the new_template
+        return list_templates
     
     @handle_db_operations
     def read_user(self, user_id: str) -> dict:
@@ -109,9 +115,11 @@ class UserService:
         user_data = self.db.read(
             query={"_id": object_id},
             collection_name="users"
-        )
+        ).get("result")
 
-        return user_data
+        user_templates = self.list_templates(user_id)
+        #user_data["starred_templates"] = [template for template in user_templates if template["stars"] > 0]
+        return user_templates
 
     @handle_db_operations
     def get_user_by_username(self, username: str, projection: dict = None): #type: ignore 
