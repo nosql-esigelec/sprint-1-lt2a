@@ -64,12 +64,22 @@ template_id = template_service_instance.create_template(template_data)
 #print(delete_result)
 print(template_id)
 """
-user_service_instance=UserService(db_instance)
-user_data = {"username": "John", "password": "secure_password"}
-user_id = user_service_instance.create_user(user_data).get("result").get("result")
-user = user_service_instance.read_user(user_id).get("result")
-print(user_id)
-"""
-# Validate update
-#updated_document = db.read(query, "users").get("result")
-"""
+user_service_instance = UserService(db=db_instance)
+data = {"username": "John", "password": "secure_password"}
+response = user_service_instance.create_user(user_data=data).get("result").get("result")
+
+user_service_instance = UserService(db=db_instance)
+data = {"username": "John", "password": "secure_password"}
+user_id = user_service_instance.create_user(user_data=data).get("result").get("result")
+template_service_instance=TemplateService(mongo=db_instance#, neo4j=neo4j_instance
+                        )
+
+for i in range(3):
+    template_service_instance.create_template({
+        "template_name": f"ListTest{random_string()}{i}", 
+        "is_private": False, 
+        "created_by": user_id
+    }).get("result")
+templates = template_service_instance.list_templates().get("result")
+
+print(templates)
