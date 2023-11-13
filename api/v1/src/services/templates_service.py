@@ -56,19 +56,28 @@ class TemplateService:
                     document_data=template_data,
                     update_type="push",
                     collection_name="users"
-                )
-                result = update_result
+                ).get("result")
+                result = {
+                    'name': {
+                        'template_name': template_data["template_name"]
+                    },
+                    'id': {
+                        'template_id': ObjectId(template_data["created_by"])
+                    }
+                }
             else:
                 # Add template to the 'templates' collection
                 insert_result = self.mongo.create(
+                    #query={"created_by": template_data["created_by"]},
                     document_data=template_data,
+                    #update_type="push",
                     collection_name="templates"
-                )
+                ).get("result")
                 result = {
-                    "key": "_id",
-                    "value": str(insert_result)
-                }
-            
+                    "key": "_id", 
+                    "value": insert_result
+                    }
+                template_data = parse_mongo_id(template_data, "template", True)
             # TODO: Create a new template in Neo4j
             # Example: self.neo4j.create(identifier=template_data.get('tid', ''), data=template_data)
             # Add your Neo4j creation logic here
@@ -82,34 +91,53 @@ class TemplateService:
     @handle_db_operations
     def read_template(self, template_id, user_id=None, read_by="template_name") -> dict:
         if self.mongo is None:
-            return {"success": False, "message": "MongoDB instance is not set."}
+            return {"MongoDB instance is not set."}
 
         try:
             if user_id:
                 # Reading a private template
                 user_object_id = ObjectId(user_id)
-                user_data = self.mongo.read(query={"_id": user_object_id}, collection_name="users")
-                if user_data and "templates" in user_data:
-                    template = next((t for t in user_data["templates"] if t.get(read_by) == template_id), None)
+                user_data = self.mongo.read(query={"_id": user_object_id}, collection_name="users").get("result")
+                if user_data and "template_name" in user_data:
+                    template = {
+                        'created_by': user_data['created_by'],
+                        'is_private': user_data['is_private'],
+                        'template_name': user_data['template_name'],
+                        'stars': user_data['stars'] if 'stars' in user_data else 0
+                    }
                 else:
                     template = None
             else:
                 # Reading a public template
-                try:
-                    object_id = ObjectId(template_id)
-                except Exception as e:
-                    return {"success": False, "message": {e}}
-
-                template_query = {"_id": object_id}
-                template = self.mongo.read(query=template_query, collection_name="templates")
-
+                template_object_id = ObjectId(template_id)
+                user_data = self.mongo.read(query={"_id": ObjectId(template_object_id)}, collection_name="templates").get("result")
+                if user_data and "template_name" in user_data:
+                    template = {
+                        'created_by': user_data['created_by'],
+                        'is_private': user_data['is_private'],
+                        'template_name': user_data['template_name'],
+                        'stars': user_data['stars'] if 'stars' in user_data else 0
+                    }
+                else:
+                    template = user_data
+                    
             if template:
-                return {"success": True, "message": "Operation successful", "result": template}
+                return template
             else:
-                return {"success": False, "message": "Template not found"}
+                user_data = self.mongo.read(query={"created_by": user_id}, collection_name="templates").get("result")
+                if user_data and "template_name" in user_data:
+                    template = {
+                        'created_by': user_data['created_by'],
+                        'is_private': user_data['is_private'],
+                        'template_name': user_data['template_name'],
+                        'stars': user_data['stars'] if 'stars' in user_data else 0
+                    }
+                else:
+                    template = None
+                return template
 
         except Exception as e:
-            return {"success": False, "message": str(e)}
+            return {str(e)}
 
     @handle_db_operations
     def list_templates(self, user_id=None, page=0, templates_per_page=10) -> list:
@@ -129,13 +157,33 @@ class TemplateService:
             try:
                 user_object_id = ObjectId(user_id)  # Make sure to convert to ObjectId
             except Exception:
-                return {"success": False, "message": "Invalid user ID format"}
+                return {"Invalid user ID format"}
 
             user_data = self.mongo.read( 
                 query={"_id": user_object_id},
                 collection_name="users"
-            )
-            return [user_data] if user_data else ['No templates found for this user']
+            ).get("result")
+            
+            if user_data is not None and "created_by" in user_data.keys(): 
+                list_templates = [
+                    {
+                        'created_by': user_data['created_by'][i],
+                        'is_private': user_data['is_private'][i],
+                        'template_name': user_data['template_name'][i],
+                        'stars': user_data['stars'] if 'stars' in user_data else 0
+                    } for i in range(len(user_data['created_by']))
+                ]
+                return list_templates
+            else: 
+                user_data = self.mongo.read( 
+                    query= {"created_by": user_id},
+                    collection_name="templates",
+                    many=True
+                ).get("result")
+                if user_data is not None:
+                    return user_data
+                else:
+                    return ["No templates found for this user"]
         else:
             # List public templates
             templates = self.mongo.read( 
@@ -144,11 +192,12 @@ class TemplateService:
                 many=True,
                 limit=templates_per_page,
                 skip=page * templates_per_page
-            )
+            ).get("result")
             return templates
 
         return []
 
+    @handle_db_operations
     def delete_template(self, template_id, user_id=None):
         """
         Delete a template from the `templates` collection or the `users` collection.
@@ -162,17 +211,18 @@ class TemplateService:
         """
         if user_id:
             # Delete a private template from the user's document in the 'users' collection
+            user_object_id = ObjectId(user_id)
             delete_count = self.mongo.delete(
-                query={"_id": ObjectId(template_id)},
+                query={"_id": user_object_id},
                 collection_name="users"
-            )
+            ).get("result")
             delete_result = template_id if delete_count > 0 else None
         else:
             # Delete a public template from the 'templates' collection
             delete_count = self.mongo.delete(
                 query={"_id": ObjectId(template_id)},
                 collection_name="templates"
-            )
+            ).get("result")
             delete_result = template_id 
 
         # TODO: Delete Template from Neo4j
@@ -193,7 +243,7 @@ class TemplateService:
         Returns:
             dict: The template data.
         """
-        template = self.read_template(template_id, user_id=user_id)
+        template = self.read_template(template_id, user_id=user_id).get("result")
         if not template:
             return None  # or raise an exception
 
@@ -207,21 +257,23 @@ class TemplateService:
         # Check if the template is private and update stars accordingly
         if template.get("is_private"):
             # Increment the `stars` field of the private template document under the user document
-            self.mongo.update(
-                query={"_id": ObjectId(user_id), "templates.template_name": template_id},
-                document_data={"$inc": {"templates.$.stars": 1}},
-                collection_name="users"
+            updated_template = self.mongo.update(
+                query={"_id": ObjectId(user_id)},
+                update_type="inc",
+                collection_name="users",
+                document_data={"stars": 1}
             )
         else:
             # Increment the `stars` field of the public template document in the `templates` collection
-            self.mongo.update(
+            updated_template = self.mongo.update(
                 query={"_id": ObjectId(template_id)},
-                document_data={"$inc": {"stars": 1}},
-                collection_name="templates"
+                update_type="inc",
+                collection_name="templates",
+                document_data={"stars": 1}
             )
 
         # Re-read the template to get the updated data
-        updated_template = self.read_template(template_id, user_id=user_id)
+        updated_template = self.read_template(template_id, user_id=user_id).get("result")
         return updated_template
 
     @handle_db_operations
