@@ -156,7 +156,7 @@ class ProjectService:
                 projects = self.mongo.read(
                     query={"created_by": user_id}, collection_name="projects", many=True
                 )
-                return projects
+                return projects.get("result")
             except Exception as e:
                 return f"An error occurred while listing projects: {e}"
         else:
