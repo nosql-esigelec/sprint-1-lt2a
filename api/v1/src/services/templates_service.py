@@ -28,10 +28,10 @@ class TemplateService:
     """
 
     def __init__(self, 
-            mongodb 
-                #  neo4j: Optional[Neo4jDB] = None
-            ):
-        self.mongo = MongoDB(mongodb)
+                mongo: MongoDB = None, 
+                #  neo4j: Neo4jDB = None
+                ):
+        self.mongo = mongo
         # self.neo4j = neo4j
 
     @handle_db_operations
@@ -97,8 +97,8 @@ class TemplateService:
                 # Reading a public template
                 try:
                     object_id = ObjectId(template_id)
-                except errors.InvalidId:
-                    return {"success": False, "message": "Invalid template ID format"}
+                except Exception as e:
+                    return {"success": False, "message": {e}}
 
                 template_query = {"_id": object_id}
                 template = self.mongo.read(query=template_query, collection_name="templates")
@@ -112,7 +112,7 @@ class TemplateService:
             return {"success": False, "message": str(e)}
 
     @handle_db_operations
-    def list_templates(self, user_id=None, page=0, templates_per_page=10) -> dict:
+    def list_templates(self, user_id=None, page=0, templates_per_page=10) -> list:
         """
         List templates from the `templates` collection or the `users` collection.
 
@@ -122,7 +122,7 @@ class TemplateService:
             templates_per_page (int, optional): The number of templates per page for pagination. Defaults to 10.
 
         Returns:
-            dict: A dictionary containing the list of template data.
+            list: A List of template data.
         """
         if user_id:
             # List private templates for a specific user
@@ -135,7 +135,7 @@ class TemplateService:
                 query={"_id": user_object_id},
                 collection_name="users"
             )
-            return user_data if user_data else ['No templates found for this user']
+            return [user_data] if user_data else ['No templates found for this user']
         else:
             # List public templates
             templates = self.mongo.read( 
