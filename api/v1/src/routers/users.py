@@ -1,18 +1,14 @@
 """
-This module contains the routes for user management. It includes the following routes:
-- POST /register: creates a new user
-- POST /login: logs in a user
-- GET /: retrieves a user by username
+User routes.
 """
-
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from api.v1.src.dependencies import get_mongo_db
-from api.v1.src.models.user import LoginResponse, SignUpResponse, UserLogged, UserSignUp
-from api.v1.src.utils.jwttoken import create_access_token
-from api.v1.src.utils.parsing import parse_mongo_id
-from api.v1.src.services.users_service import UserService
+from src.dependencies import get_mongo_db
+from src.models.user import LoginResponse, SignUpResponse, UserLogged, UserSignUp
+from src.utils.jwttoken import create_access_token
+from src.utils.parsing import parse_mongo_id
+from src.services.users_service import UserService
 
 router = APIRouter()
 
@@ -24,11 +20,6 @@ user_service = UserService(db)
 def create_user(user: UserSignUp):
     """
     Create a new user.
-
-    :param user: UserSignUp object containing user information.
-    :type user: UserSignUp
-    :return: Dictionary containing the user_id of the newly created user.
-    :rtype: dict
     """
     user_object = dict(user)
     user_id = user_service.create_user(user_object).get("result")
@@ -39,15 +30,6 @@ def create_user(user: UserSignUp):
 def login(request: OAuth2PasswordRequestForm = Depends()):
     """
     Login user.
-
-    Authenticates the user with the provided username and password.
-    If the user is authenticated, creates an access token and returns it along with the user details.
-
-    Args:
-        request (OAuth2PasswordRequestForm): The request object containing the username and password.
-
-    Returns:
-        dict: A dictionary containing the access token, token type and user details.
     """
     user = user_service.authenticate_user(request.username, request.password).get(
         "result"
@@ -68,15 +50,6 @@ def login(request: OAuth2PasswordRequestForm = Depends()):
 def get_user(username: str):
     """
     Get user by username.
-
-    Args:
-        username (str): The username of the user to retrieve.
-
-    Returns:
-        dict: A dictionary containing the user's information, excluding their password.
-
-    Raises:
-        HTTPException: If no user is found with the given username.
     """
     current_user = user_service.get_user_by_username(
         username, projection={"password": 0}

@@ -1,11 +1,10 @@
 from functools import wraps
-from typing import Any
 import logging
 from pymongo import errors
 import random
 import string
 
-def generate_response(success: bool, message: str, result: Any = None) -> dict:
+def generate_response(success: bool, message: str, result: any = "0") -> dict:
     """
     Generate a standardized response dictionary.
 
@@ -50,14 +49,14 @@ def build_query_sort_project(filters):
     sort = [('created_at', -1)]
     project = {}
     if "template_description" in filters.keys():
-        query["$text"] = {"$search": filters["template_description"]}
+        filters["$text"] = {"$search": filters["template_description"]}
         meta = {"score": {"$meta": "textScore"}}
         sort = [("score", meta)]
         project["score"] = meta
     elif "template_tags" in filters.keys():
-        query["$tags"] = {"$all": filters["template_tags"]}
+        filters["tags"] = {"$all": filters["template_tags"]}
     elif "stars" in filters.keys():
-        query["$stars"] = {"$gte": int(filters["stars"])}
+        filters["stars"] = {"$gte": int(filters["stars"])}
     else:
         sort = [('created_at', -1)]
     return query, sort, project

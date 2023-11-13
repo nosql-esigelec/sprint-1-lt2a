@@ -1,5 +1,5 @@
 import pytest
-from api.v1.src.dependencies import get_mongo_db
+from src.dependencies import get_mongo_db
 # Setup MongoDB test database
 
 
@@ -40,7 +40,7 @@ def test_read(mongo_instance):
 def test_update(mongo_instance):
     query = {"name": "John"}
     update_data = {"age": 31}
-    modified_count = mongo_instance.update(query, update_data, "users").get("result").get("result")
+    modified_count = mongo_instance.update(query, update_data, "users").get("result")
     assert modified_count > 0
 
     # Validate update
@@ -57,3 +57,6 @@ def test_delete(mongo_instance):
     # Validate deletion
     result = mongo_instance.read(query, "users").get("result")
     assert result is None
+
+
+

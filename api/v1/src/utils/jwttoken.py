@@ -16,16 +16,6 @@ def create_access_token(data: dict):
 
 
 def verify_token(token: str, credentials_exception):
-    """
-    Verify the JWT token and return True if it is valid.
-
-    Parameters:
-    token (str): The JWT token to verify.
-    credentials_exception: The exception to raise if the token is invalid.
-
-    Returns:
-    bool: True if the token is valid, False otherwise.
-    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
