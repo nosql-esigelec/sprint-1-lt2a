@@ -40,7 +40,7 @@ def test_read(mongo_instance):
 def test_update(mongo_instance):
     query = {"name": "John"}
     update_data = {"age": 31}
-    modified_count = mongo_instance.update(query, update_data, "users").get("result").get("result")
+    modified_count = mongo_instance.update(query, update_data, "users").get("result")
     assert modified_count > 0
 
     # Validate update
