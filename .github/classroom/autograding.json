@@ -21,6 +21,26 @@
       "points": 20
     },
     {
+      "name": "Neo4jDB CRUD Operations",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/api/v1 pytest -m crud_neo4j",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 50
+    },
+    {
+      "name": " Section Service",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/api/v1 pytest -m section_service",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 50
+    },
+    {
       "name": "Project Service",
       "setup": "",
       "run": "PYTHONPATH=$(pwd)/api/v1 pytest -m project_service",
@@ -28,7 +48,7 @@
       "output": "",
       "comparison": "exact",
       "timeout": 10,
-      "points": 30
+      "points": 50
     },
     {
       "name": "Template Service",
@@ -38,7 +58,7 @@
       "output": "",
       "comparison": "exact",
       "timeout": 10,
-      "points": 70
+      "points": 90
     }
   ]
 }
