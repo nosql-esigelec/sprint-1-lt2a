@@ -70,7 +70,7 @@ response = user_service_instance.create_user(user_data=data).get("result")
 
 user_service_instance = UserService(db=db_instance)
 data = {"username": "John", "password": "secure_password"}
-user_id = user_service_instance.create_user(user_data=data).get("result")
+#user_id = user_service_instance.create_user(user_data=data).get("result")
 template_service_instance=TemplateService(mongo=db_instance#, neo4j=neo4j_instance
                         )
 #created = []
@@ -87,11 +87,25 @@ list = template_service_instance.list_templates().get("result")"""
 #    templates = templates["templates"]
 #templates['result'] if 'template_name' in templates['result'] else ['No templates found']
 # You need to create a template first to test the read operation
-template_name = "StarTest"+random_string()
+"""template_name = "StarTest"+random_string()
 template_data = {"template_name": template_name, "is_private": True, "created_by": user_id}
 template_id = template_service_instance.create_template(template_data).get("result")['id']['template_id']
 # Perform the star operation
 star = template_service_instance.star_template(user_id, template_id).get("result")
 # Verify the template is starred by the user
 starred_template = user_service_instance.read_user(user_id).get("result").get("starred_templates")
-print(starred_template)
+print(starred_template)"""
+def user_id(mongo_instance, user_service_instance):
+    data = {"username": "John", "password": "secure_password"}
+    user_id = user_service_instance.create_user(user_data=data).get("result")
+    yield user_id
+user_id = user_id(db_instance, user_service_instance)
+template_name = "StarTest"+random_string()
+template_data = {"template_name": template_name, "is_private": True, "created_by": user_id}
+template_id = "e2359285d67049bf89bcd731af8eab32"
+# Perform the star operation
+star = template_service_instance.star_template(user_id, template_id)
+# Verify the template is starred by the user
+starred_template = user_service_instance.read_user(user_id)#.get("result").get("starred_templates")
+
+print(star)
