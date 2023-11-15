@@ -13,13 +13,12 @@ def mongo_instance():
 def test_mongo_instance(mongo_instance):
     assert mongo_instance is not None
 
-
 @pytest.mark.crud_operations
 def test_create_index(mongo_instance):
     mongo_instance.drop_index("users", "username_1")
     index_name = mongo_instance.create_index("users", "username", unique=True).get("result")
     assert index_name == "username_1"
-
+    
 @pytest.mark.crud_operations
 def test_create(mongo_instance):
     mongo_instance.drop_collection("users")
@@ -27,7 +26,6 @@ def test_create(mongo_instance):
     result = mongo_instance.create(document, "users").get("result")
     assert isinstance(result, str)
     assert len(result) == 24
-    
 
 @pytest.mark.crud_operations
 def test_read(mongo_instance):
