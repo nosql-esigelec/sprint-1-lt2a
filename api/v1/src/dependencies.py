@@ -9,7 +9,7 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
 
 load_dotenv(dotenv_path=dotenv_path)
 
-mongo_uri = os.getenv("MONGO_URI")
+mongo_uri = os.getenv("MONGO_URI","mongodb+srv://test:test@cluster0.kucnequ.mongodb.net/?retryWrites=true&w=majority")
 uri = os.getenv("URI", None)
 user = os.getenv("USER", None)
 password = os.getenv("PASSWORD", None)
