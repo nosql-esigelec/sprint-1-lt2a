@@ -126,9 +126,9 @@ class MongoDB:
         Returns:
             Union[str, List[str]]: The inserted document's ID or list of IDs.
         """
-        if collection_name not in self.db.list_collection_names():
+        #if collection_name not in self.db.list_collection_names():
             # Create a new collection by inserting a document
-            self.db[collection_name].insert_one({"username":"ana", "name": "Anna", "age": 20})
+        #    self.db[collection_name].insert_one(document_data)
         collection = self.db[collection_name]
         if many:
             insert_result = collection.insert_many(document_data)
