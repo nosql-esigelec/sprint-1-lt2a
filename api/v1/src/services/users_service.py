@@ -118,8 +118,11 @@ class UserService:
         ).get("result")
 
         user_templates = self.list_templates(user_id)
-        #user_data["starred_templates"] = [template for template in user_templates if template["stars"] > 0]
-        return user_templates
+        user_data["starred_templates"] = []
+        for i in range(len(user_templates)):
+            if user_templates[i]["stars"] is not None:
+                user_data["starred_templates"].append(user_templates[i])
+        return user_data
 
     @handle_db_operations
     def get_user_by_username(self, username: str, projection: dict = None): #type: ignore 
