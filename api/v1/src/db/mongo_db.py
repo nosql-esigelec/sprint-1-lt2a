@@ -8,12 +8,28 @@ Classes:
 
 """
 
-import logging
-from typing import Optional, List, Union
-import datetime
-from bson.objectid import ObjectId
-from pymongo import errors
-from src.utils.handlers import handle_db_operations
+# import logging
+from typing import List, Optional, Union
+
+from api.v1.src.utils.handlers import handle_db_operations
+
+
+class MongoDB:
+    """
+    A class to manage the database operations.
+
+    Attributes:
+        db: A pymongo.database.Database object representing the database.
+    """
+
+    def __init__(self, db):
+        """
+        Initialize the database.
+
+        Args:
+            db: A pymongo.database.Database object representing the database.
+        """
+        self.db = db
 
 
 class MongoDB:
@@ -41,7 +57,7 @@ class MongoDB:
 
         drop_result = self.db[collection_name].drop()
         return drop_result
-    
+
     @handle_db_operations
     def drop_database(self, database_name: str) -> dict:
         """
@@ -54,7 +70,7 @@ class MongoDB:
             dict: A dictionary containing the operation's success status, message, and result.
         """
 
-        drop_result = self.db.drop()
+        drop_result = self.db.drop(database_name)
         return drop_result
 
     @handle_db_operations
@@ -70,8 +86,13 @@ class MongoDB:
             dict: A dictionary containing the operation's success status, message, and result.
         """
 
-        drop_result = self.db[collection_name].drop_index(index_name)
-        return drop_result
+        indexes = self.db[collection_name].index_information()
+        if index_name in indexes:
+            # If the index exists, drop it
+            drop_result = self.db[collection_name].drop_index(index_name)
+            return drop_result
+        else:
+            return {}
 
     @handle_db_operations
     def create_index(
@@ -83,18 +104,20 @@ class MongoDB:
         Args:
             collection_name (str): The collection name.
             field (str): The field name.
+            unique (bool, optional): The uniqueness of the index.
 
         Returns:
             str: The name of the index.
         """
-        # TODO(mongo): Create Index
-        # (fixme, mongo): Implement the method to create an index on the collection for the field.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/indexes/
-        index_name = "placeholder"
+
+        collection = self.db[collection_name]
+        index_name = collection.create_index([(field, 1)], unique=unique)
         return index_name
-    
+
     @handle_db_operations
-    def create(self, document_data: dict, collection_name: str, many: bool = False) -> Union[str, List[str]]:
+    def create(
+        self, document_data: dict, collection_name: str, many: bool = False
+    ) -> Union[str, List[str]]:
         """
         Create a document in a collection in the database.
         Used for create_org, create_project
@@ -107,11 +130,14 @@ class MongoDB:
         Returns:
             Union[str, List[str]]: The inserted document's ID or list of IDs.
         """
-        # TODO(mongo): Create Document(s)
-        # (fixme, mongo): Implement the method to create a new document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/insert-documents/
-        insert_result = "placeholder"
-        return insert_result
+
+        collection = self.db[collection_name]
+        if many:
+            insert_result = collection.insert_many(document_data)
+            return [str(doc_id) for doc_id in insert_result.inserted_ids]
+        else:
+            insert_result = collection.insert_one(document_data)
+            return str(insert_result.inserted_id)
 
     @handle_db_operations
     def read(
@@ -125,7 +151,7 @@ class MongoDB:
         skip: Optional[int] = None,
     ) -> Union[dict, List[dict]]:
         """
-        Read a document(s) from the specified collection based on the query.
+        Read one or more document(s) from the specified collection based on the query.
 
         Args:
             query (dict): The query of the document to be retrieved.
@@ -139,12 +165,20 @@ class MongoDB:
         Returns:
             Union[dict, List[dict]]: The retrieved document(s).
         """
-        # TODO(mongo): Read Document(s)
-        # (fixme, mongo): Implement the method to read a document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/query-documents/
-        
-        document = {} or [{},{}] #placeholder
-        return document
+
+        collection = self.db[collection_name]
+        if many:
+            cursor = collection.find(query, projection)
+            if sort:
+                cursor = cursor.sort(sort)
+            if skip is not None:
+                cursor = cursor.skip(skip)
+            cursor = cursor.limit(limit)
+            documents = list(cursor)
+            return documents
+        else:
+            document = collection.find_one(query, projection)
+            return document
 
     @handle_db_operations
     def update(
@@ -153,7 +187,7 @@ class MongoDB:
         document_data: dict,
         collection_name: str,
         update_type: str = "set",
-    ) -> int:
+    ) -> dict:
         """
         Update a document in a given collection in the database.
 
@@ -164,18 +198,40 @@ class MongoDB:
             update_type (str): The type of update to be performed. Defaults to "set".
 
         Returns:
-            int: The number of modified documents.
+            dict: A dictionary containing the operation's success status, message, and result.
         """
-        # TODO(mongo): Update Document(s)
-        # (fixme, mongo): Implement the method to update a document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/update-documents/
-        if update_type not in ["set", "push", "pull", "unset", "inc"]:
-            return {"success": False, "message": "Invalid update type"}
-        
         collection = self.db[collection_name]
-        
-        documents_updated_count = 0 #placeholder
-        return documents_updated_count
+        update_operation = {}
+
+        # Define the update operation based on the update_type
+        if update_type == "set":
+            update_operation = {"$set": document_data}
+        elif update_type == "push":
+            update_operation = {"$push": document_data}
+        elif update_type == "pull":
+            update_operation = {"$pull": document_data}
+        elif update_type == "unset":
+            update_operation = {"$unset": document_data}
+        elif update_type == "inc":
+            update_operation = {"$inc": document_data}
+        else:
+            return -2
+
+        try:
+            # Perform the update operation
+            result = collection.update_many(query, update_operation)
+            documents_updated_count = result.modified_count
+
+            # Return the number of documents updated
+            if documents_updated_count > 0:
+                return documents_updated_count
+            else:
+                return 0
+
+        except Exception as e:
+            # If an error occurs, return an error message
+            return -1
+
     @handle_db_operations
     def delete(self, query: dict, collection_name: str, many: bool = False) -> int:
         """
@@ -189,8 +245,12 @@ class MongoDB:
         Returns:
             int: The number of deleted documents.
         """
-        # TODO(mongo): Delete Document(s) 
-        # (fixme, mongo): Implement the method to delete a document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/remove-documents/
-        documents_deleted_count = 0 #placeholder
+
+        collection = self.db[collection_name]
+        if many:
+            result = collection.delete_many(query)
+        else:
+            result = collection.delete_one(query)
+
+        documents_deleted_count = result.deleted_count
         return documents_deleted_count
