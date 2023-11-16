@@ -1,11 +1,10 @@
+from fastapi.testclient import TestClient
+import pytest
+from api.v1.tests.main_test import (
+    app,
+)  # Replace with the actual path to your FastAPI app instance
 import random
 import string
-
-import pytest
-from fastapi.testclient import TestClient
-
-from api.v1.tests.main_test import \
-    app  # Replace with the actual path to your FastAPI app instance
 
 client = TestClient(app)
 

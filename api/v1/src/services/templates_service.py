@@ -7,6 +7,7 @@ It provides methods to create, read, list and delete templates from the 'templat
 import json
 import logging
 import uuid
+
 # pylint: disable=W0212
 from ast import parse
 from curses import meta  # type: ignore
@@ -17,10 +18,14 @@ from pymongo import errors
 from requests import get  # type: ignore
 
 from api.v1.src.db.mongo_db import MongoDB
-# from src.db.neo4j_db import Neo4jDB
+
+from api.v1.src.db.neo4j_db import Neo4jDB
 from api.v1.src.services.users_service import UserService
-from api.v1.src.utils.handlers import (build_query_sort_project,
-                                       generate_response, handle_db_operations)
+from api.v1.src.utils.handlers import (
+    build_query_sort_project,
+    generate_response,
+    handle_db_operations,
+)
 from api.v1.src.utils.parsing import parse_mongo_id
 
 
@@ -29,13 +34,9 @@ class TemplateService:
     Class to manage template operations.
     """
 
-    def __init__(
-        self,
-        mongo: MongoDB = None,
-        #  neo4j: Neo4jDB = None
-    ):
+    def __init__(self, mongo: MongoDB = None, neo4j: Neo4jDB = None):
         self.mongo = mongo
-        # self.neo4j = neo4j
+        self.neo4j = neo4j
 
     @handle_db_operations
     def create_template(self, template_data: dict):
