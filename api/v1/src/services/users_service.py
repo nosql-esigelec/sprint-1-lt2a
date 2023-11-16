@@ -1,22 +1,25 @@
-#type: ignore 
 """
 User Service
+This module contains the UserService class which manages user operations such as creating a user, authenticating a user, reading a user, and getting a user by username. It also contains a function to list templates for a user. The UserService class uses a MongoDB instance to perform database operations.
 """
+# type: ignore
+
 # pylint: disable=W0212
-import logging
 from bson.objectid import ObjectId
-from pymongo import errors
+
 from api.v1.src.db.mongo_db import MongoDB
 from api.v1.src.utils.handlers import handle_db_operations
+
 
 class UserService:
     """
     Class to manage user operations.
     """
+
     def __init__(self, db: MongoDB):
         self.db = db
         # self.neo4j = neo4j
-    
+
     @handle_db_operations
     def create_user(self, user_data: dict) -> str:
         """
@@ -35,16 +38,12 @@ class UserService:
         if "org_name" not in user_data:
             org_name = user_data.get("username")
             user_data.update({"org_name": org_name})
-            org_id = self.db.create( 
-                document_data=user_data, 
-                collection_name=org_name
-            )
+            org_id = self.db.create(document_data=user_data, collection_name=org_name)
         else:
             # Assuming orgs are pre-existing and org_name uniquely identifies them
             org_name = user_data["org_name"]
             existing_org = self.db.read(
-                query={"org_name": org_name},
-                collection_name=org_name
+                query={"org_name": org_name}, collection_name=org_name
             )
             org_id = existing_org.get("_id") if existing_org else None
 
@@ -55,13 +54,10 @@ class UserService:
         user_data["org_id"] = org_id
 
         # Create the user
-        insert_result = self.db.create(
-            document_data=user_data, 
-            collection_name="users"
-        )
+        insert_result = self.db.create(document_data=user_data, collection_name="users")
 
         return insert_result.get("result")
-    
+
     @handle_db_operations
     def authenticate_user(self, username: str, password: str) -> dict:
         """
@@ -77,8 +73,7 @@ class UserService:
 
         # Query for user with matching username and password
         user_data = self.db.read(
-            query={"username": username, "password": password},
-            collection_name="users"
+            query={"username": username, "password": password}, collection_name="users"
         )
 
         # Check if user is found and return user data, else return None
@@ -86,14 +81,15 @@ class UserService:
             return user_data.get("result")
         else:
             return None
-    
+
     def list_templates(self, user_id):
         from api.v1.src.services.templates_service import TemplateService
+
         list_templates = TemplateService(self.db).list_templates(user_id).get("result")
 
         # Return the new_template
         return list_templates
-    
+
     @handle_db_operations
     def read_user(self, user_id: str) -> dict:
         """
@@ -112,10 +108,9 @@ class UserService:
             return None  # or handle invalid user_id format
 
         # Query the database for the user
-        user_data = self.db.read(
-            query={"_id": object_id},
-            collection_name="users"
-        ).get("result")
+        user_data = self.db.read(query={"_id": object_id}, collection_name="users").get(
+            "result"
+        )
 
         user_templates = self.list_templates(user_id)
         user_data["starred_templates"] = []
@@ -125,7 +120,7 @@ class UserService:
         return user_data
 
     @handle_db_operations
-    def get_user_by_username(self, username: str, projection: dict = None): #type: ignore 
+    def get_user_by_username(self, username: str, projection: dict = None):  # type: ignore
         """
         Get a user by username.
 

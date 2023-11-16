@@ -6,19 +6,21 @@ This module contains the routes for templates. It includes the following endpoin
 - delete_template_endpoint: deletes a template by id
 """
 
-from fastapi import APIRouter, HTTPException
 from typing import Optional
-from api.v1.src.models.template import TemplateInsertFields, TemplateReadFields
-from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
-from api.v1.src.utils.parsing import parse_mongo_id
-from api.v1.src.services.templates_service import TemplateService
 
+from fastapi import APIRouter, HTTPException
+
+from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
+from api.v1.src.models.template import TemplateInsertFields, TemplateReadFields
+from api.v1.src.services.templates_service import TemplateService
+from api.v1.src.utils.parsing import parse_mongo_id
 
 router = APIRouter()
 mongo = get_mongo_db()
 neo4j = get_neo4j_db()
-template_service = TemplateService(mongo, 
-                                #    neo4j
+template_service = TemplateService(
+    mongo,
+    #    neo4j
 )
 
 
@@ -86,7 +88,7 @@ async def get_template_endpoint(template_id: str, user_id: Optional[str] = None)
         "result"
     )
     if user_id is not None:
-        template = template['templates'][0]
+        template = template["templates"][0]
     print(f"Template: {template}")
     if user_id is None:
         template = parse_mongo_id(template, "template")

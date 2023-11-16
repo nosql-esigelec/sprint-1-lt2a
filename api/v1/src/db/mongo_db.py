@@ -8,12 +8,28 @@ Classes:
 
 """
 
-#import logging
-from typing import Optional, List, Union
-#import datetime
-#from bson.objectid import ObjectId
-from pymongo import errors
+# import logging
+from typing import List, Optional, Union
+
 from api.v1.src.utils.handlers import handle_db_operations
+
+
+class MongoDB:
+    """
+    A class to manage the database operations.
+
+    Attributes:
+        db: A pymongo.database.Database object representing the database.
+    """
+
+    def __init__(self, db):
+        """
+        Initialize the database.
+
+        Args:
+            db: A pymongo.database.Database object representing the database.
+        """
+        self.db = db
 
 
 class MongoDB:
@@ -28,9 +44,7 @@ class MongoDB:
         self.db = db
 
     @handle_db_operations
-    def drop_collection(self,
-                        collection_name: str
-                        ) -> dict:
+    def drop_collection(self, collection_name: str) -> dict:
         """
         Drop a collection from the database.
 
@@ -45,9 +59,7 @@ class MongoDB:
         return drop_result
 
     @handle_db_operations
-    def drop_database(self,
-                    database_name: str
-                ) -> dict:
+    def drop_database(self, database_name: str) -> dict:
         """
         Drop a database from the database.
 
@@ -58,14 +70,11 @@ class MongoDB:
             dict: A dictionary containing the operation's success status, message, and result.
         """
 
-        drop_result = self.db.drop()
+        drop_result = self.db.drop(database_name)
         return drop_result
 
     @handle_db_operations
-    def drop_index(self,
-                collection_name: str,
-                index_name: str
-            ) -> dict:
+    def drop_index(self, collection_name: str, index_name: str) -> dict:
         """
         Drop an index from the collection.
 
@@ -79,7 +88,7 @@ class MongoDB:
 
         indexes = self.db[collection_name].index_information()
         if index_name in indexes:
-        # If the index exists, drop it
+            # If the index exists, drop it
             drop_result = self.db[collection_name].drop_index(index_name)
             return drop_result
         else:
@@ -87,10 +96,7 @@ class MongoDB:
 
     @handle_db_operations
     def create_index(
-        self,
-        collection_name: str,
-        field: str,
-        unique: bool = False
+        self, collection_name: str, field: str, unique: bool = False
     ) -> dict:
         """
         Create an index on the `collection` for the `field`.
@@ -109,11 +115,9 @@ class MongoDB:
         return index_name
 
     @handle_db_operations
-    def create(self,
-            document_data: dict,
-            collection_name: str,
-            many: bool = False
-            ) -> Union[str, List[str]]:
+    def create(
+        self, document_data: dict, collection_name: str, many: bool = False
+    ) -> Union[str, List[str]]:
         """
         Create a document in a collection in the database.
         Used for create_org, create_project
@@ -126,9 +130,7 @@ class MongoDB:
         Returns:
             Union[str, List[str]]: The inserted document's ID or list of IDs.
         """
-        #if collection_name not in self.db.list_collection_names():
-            # Create a new collection by inserting a document
-        #    self.db[collection_name].insert_one(document_data)
+
         collection = self.db[collection_name]
         if many:
             insert_result = collection.insert_many(document_data)
@@ -179,7 +181,13 @@ class MongoDB:
             return document
 
     @handle_db_operations
-    def update(self, query: dict, document_data: dict, collection_name: str, update_type: str = "set") -> dict:
+    def update(
+        self,
+        query: dict,
+        document_data: dict,
+        collection_name: str,
+        update_type: str = "set",
+    ) -> dict:
         """
         Update a document in a given collection in the database.
 
@@ -237,9 +245,6 @@ class MongoDB:
         Returns:
             int: The number of deleted documents.
         """
-        # TODO(mongo): Delete Document(s)
-        # (fixme, mongo): Implement the method to delete a document or many documents in the database.
-        # Refer to MongoDB documentation: https://docs.mongodb.com/manual/tutorial/remove-documents/
 
         collection = self.db[collection_name]
         if many:

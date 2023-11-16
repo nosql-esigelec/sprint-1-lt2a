@@ -9,8 +9,10 @@ The module defines the following models:
 - TemplateUpdateFields: contains the fields required for updating a template.
 - TemplateReadFields: contains the fields required for reading a template.
 """
+from typing import List, Optional, Union
+
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union
+
 
 class TemplateFields(BaseModel):
     """
@@ -31,12 +33,14 @@ class TemplateFields(BaseModel):
     template_tags : List[str]
         The tags associated with the template.
     """
-    tid: Optional[Union[dict,str]] = Field(None)
+
+    tid: Optional[Union[dict, str]] = Field(None)
     created_by: str
     template_name: str
     template_description: str
     is_private: bool
     template_tags: List[str]
+
 
 class TemplateOptionalFields(BaseModel):
     """
@@ -53,6 +57,7 @@ class TemplateOptionalFields(BaseModel):
     template_tags : Optional[List]
         The tags associated with the template.
     """
+
     template_name: Optional[str] = Field(None)
     template_description: Optional[str] = Field(None)
     is_private: Optional[bool] = Field(None)
@@ -72,16 +77,20 @@ class TemplateAdvancedFields(BaseModel):
     relevance_score : Optional[int]
         The relevance score of the template.
     """
-    template_url: Optional[str]  = Field(None)
-    template_tree: Optional[str]  = Field(None)
+
+    template_url: Optional[str] = Field(None)
+    template_tree: Optional[str] = Field(None)
     relevance_score: Optional[int] = Field(None)
+
 
 class TemplateInsertFields(TemplateFields, TemplateAdvancedFields):
     """
     TemplateInsertFields model contains the fields required for inserting a template.
     Inherits from TemplateFields and TemplateAdvancedFields.
     """
+
     pass
+
 
 class TemplateUpdateFields(TemplateOptionalFields, TemplateAdvancedFields):
     """
@@ -89,11 +98,14 @@ class TemplateUpdateFields(TemplateOptionalFields, TemplateAdvancedFields):
 
     Inherits from TemplateOptionalFields and TemplateAdvancedFields.
     """
+
     pass
+
 
 class TemplateReadFields(TemplateFields, TemplateAdvancedFields):
     """
     TemplateReadFields model contains the fields required for reading a template.
     Inherits from TemplateFields and TemplateAdvancedFields.
     """
+
     pass

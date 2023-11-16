@@ -1,18 +1,13 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-
-from api.v1.src.models.user import UserLogged
 from api.v1.src.main import router as v1_router
+from api.v1.src.models.user import UserLogged
 from api.v1.src.utils.oauth import get_current_user
-
-
 
 app = FastAPI()
 
-origins = [
-    "*"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,7 +20,7 @@ app.add_middleware(
 
 app.include_router(v1_router, prefix="/v1")
 
-@app.get("/")
-async def root(current_user:UserLogged = Depends(get_current_user)):
-    return {"message": "Hello Bigger Applications!"}
 
+@app.get("/")
+async def root(current_user: UserLogged = Depends(get_current_user)):
+    return {"message": "Hello Bigger Applications!"}

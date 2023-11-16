@@ -10,8 +10,10 @@ Models:
 - Token: Model for token response.
 - TokenData: Model for token data.
 """
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 
 class UserSignUp(BaseModel):
     """
@@ -22,9 +24,11 @@ class UserSignUp(BaseModel):
         email (str): The email address of the user.
         password (str): The password of the user.
     """
+
     username: str
     email: str
     password: str
+
 
 class UserLogged(BaseModel):
     """
@@ -41,10 +45,12 @@ class UserLogged(BaseModel):
     email : str
         The email address of the user.
     """
+
     uid: str
     org_id: str
     username: str
     email: str
+
 
 class SignUpResponse(BaseModel):
     """
@@ -55,7 +61,9 @@ class SignUpResponse(BaseModel):
     user_id : str
         The ID of the user who signed up.
     """
+
     user_id: str
+
 
 class LoginResponse(BaseModel):
     """
@@ -66,9 +74,11 @@ class LoginResponse(BaseModel):
         token_type (str): The type of token.
         user (UserLogged): The logged in user.
     """
+
     access_token: str
     token_type: str
     user: UserLogged
+
 
 class Login(BaseModel):
     """
@@ -81,6 +91,7 @@ class Login(BaseModel):
     password : str
         The password of the user.
     """
+
     username: str
     password: str
 
@@ -96,8 +107,10 @@ class Token(BaseModel):
     token_type : str
         The type of token generated.
     """
+
     access_token: str
     token_type: str
+
 
 class TokenData(BaseModel):
     """
@@ -106,4 +119,5 @@ class TokenData(BaseModel):
     Attributes:
         username (Optional[str]): The username associated with the token.
     """
+
     username: Optional[str] = None

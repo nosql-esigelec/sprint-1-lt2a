@@ -10,23 +10,22 @@ This module contains the API routes for projects. It includes the following rout
 """
 
 from typing import Union
+
 from fastapi import APIRouter, HTTPException
-from api.v1.src.models.project import (
-    ProjectInsertFields,
-    ProjectUpdateFields,
-    ProjectReadFields,
-    ProjectFields,
-)
+
 from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
-from api.v1.src.utils.parsing import parse_mongo_id
+from api.v1.src.models.project import (ProjectFields, ProjectInsertFields,
+                                       ProjectReadFields, ProjectUpdateFields)
 from api.v1.src.services.projects_service import ProjectService
+from api.v1.src.utils.parsing import parse_mongo_id
 
 router = APIRouter()
 
 mongo = get_mongo_db()
 neo4j = get_neo4j_db()
-project_service = ProjectService(mongo, 
-                                #neo4j
+project_service = ProjectService(
+    mongo,
+    # neo4j
 )
 
 
@@ -93,6 +92,7 @@ async def get_project_endpoint(project_id: str, full: bool = False):
         return ProjectReadFields(**project)
     return ProjectFields(**project)
 
+
 @router.get("/{project_id}/recommended-templates")
 async def get_recommended_templates(project_id: str):
     """
@@ -107,10 +107,11 @@ async def get_recommended_templates(project_id: str):
     Raises:
         HTTPException: If templates are not found.
     """
-    templates = project_service.get_recommended_templates(project_id).get("result") 
+    templates = project_service.get_recommended_templates(project_id).get("result")
     if not templates:
         raise HTTPException(status_code=404, detail="Templates not found")
     return templates
+
 
 @router.put("/{project_id}", response_model=ProjectReadFields)
 async def update_project_endpoint(project_id: str, updated_data: ProjectUpdateFields):
@@ -142,10 +143,9 @@ async def update_project_endpoint(project_id: str, updated_data: ProjectUpdateFi
     print(f"The updated project is {updated_project}")
     return updated_project
 
+
 @router.post("/{project_id}/select-template/")
-async def project_selected_template(
-    project_id: str,  template_id: str
-):
+async def project_selected_template(project_id: str, template_id: str):
     """
     Selects a template for a given project.
 
@@ -161,6 +161,7 @@ async def project_selected_template(
     if relation is None:
         raise HTTPException(status_code=404, detail="Project not found")
     return relation
+
 
 @router.delete("/{project_id}", response_model=dict)
 async def delete_project_endpoint(project_id: str):

@@ -1,20 +1,32 @@
 """
 This module contains the Pydantic models for the Project API.
 It defines the fields for inserting, updating, reading, and converting projects to and from the database and front-end.
-"""
 
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from bson.objectid import ObjectId
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from bson.objectid import ObjectId
+The module contains the following classes:
+- ProjectFields: Represents the fields of a project.
+- ProjectOptionalFields: Optional fields for a project.
+- ProjectAdvancedFields: Represents the advanced fields of a project.
+- ProjectInsertFields: A class representing the fields to be inserted into a project record in the database.
+- ProjectUpdateFields: A class representing the fields that can be updated for a project.
+- ProjectReadFields: A class representing the fields to be read for a project.
+- ProjectFromFront: Represents a project sent from the front-end.
+- ProjectFromDB: Represents a project stored in the database.
+- ProjectToDB: Represents a project to be stored in the database.
+- ProjectToFront: Represents a project to be sent to the front-end.
+"""
+"""
+This module contains the Pydantic models for the Project API.
+It defines the fields for inserting, updating, reading, and converting projects to and from the database and front-end.
+"""
 
 # Union[float, None] = None
 
 
 from typing import List, Optional
+
+from bson import ObjectId
 from pydantic import BaseModel, Field
+
 
 class ProjectFields(BaseModel):
     """
@@ -35,26 +47,38 @@ class ProjectFields(BaseModel):
     project_tags : List[str]
         The tags associated with the project.
     """
-    pid: Optional[str] = Field(None)
-    created_by: str
-    project_name: str
-    project_type: str
-    project_architecture: str
-    project_tags: List[str]
+
+    pid: Optional[str] = Field(None, description="The project ID.")
+    created_by: str = Field(..., description="The user who created the project.")
+    project_name: str = Field(..., description="The name of the project.")
+    project_type: str = Field(..., description="The type of the project.")
+    project_architecture: str = Field(
+        ..., description="The architecture of the project."
+    )
+    project_tags: List[str] = Field(
+        [], description="The tags associated with the project."
+    )
 
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
+
 
 class ProjectOptionalFields(BaseModel):
     """
     Optional fields for a project.
 
     :param project_name: The name of the project.
+    :type project_name: str
     :param project_type: The type of the project.
+    :type project_type: str
     :param project_architecture: The architecture of the project.
+    :type project_architecture: str
     :param project_tags: The tags associated with the project.
+    :type project_tags: List[str]
     """
+
     project_name: Optional[str] = Field(None)
     project_type: Optional[str] = Field(None)
     project_architecture: Optional[str] = Field(None)
@@ -92,6 +116,7 @@ class ProjectAdvancedFields(BaseModel):
     database : Optional[str]
         The database used in the project.
     """
+
     languages: Optional[List[str]] = Field(None)
     language_version: Optional[List[str]] = Field(None)
     frontend_framework: Optional[str] = Field(None)
@@ -111,6 +136,7 @@ class ProjectInsertFields(ProjectFields, ProjectAdvancedFields):
     A class representing the fields to be inserted into a project record in the database.
     Inherits from ProjectFields and ProjectAdvancedFields.
     """
+
     pass
 
 
@@ -120,6 +146,7 @@ class ProjectUpdateFields(ProjectOptionalFields, ProjectAdvancedFields):
 
     Inherits from ProjectOptionalFields and ProjectAdvancedFields.
     """
+
     pass
 
 
@@ -128,11 +155,9 @@ class ProjectReadFields(ProjectFields, ProjectAdvancedFields):
     A class representing the fields to be read for a project.
     Inherits from ProjectFields and ProjectAdvancedFields.
     """
+
     pass
 
-
-from typing import Optional
-from pydantic import BaseModel, Field
 
 class ProjectFromFront(BaseModel):
     """
@@ -151,16 +176,13 @@ class ProjectFromFront(BaseModel):
     repo : Optional[str]
         The repository URL for the project.
     """
+
     name: str
     project_type: str
     tags: str
     vcs: Optional[str] = Field(None)
     repo: Optional[str] = Field(None)
 
-
-from typing import Optional
-from pydantic import BaseModel, Field
-from bson import ObjectId
 
 class ProjectFromDB(BaseModel):
     """
@@ -181,6 +203,7 @@ class ProjectFromDB(BaseModel):
     repo : Optional[str]
         The URL of the project's repository.
     """
+
     _id: ObjectId
     name: str
     project_type: str
@@ -200,6 +223,7 @@ class ProjectToDB(BaseModel):
         vcs (Optional[str]): The version control system used for the project.
         repo (Optional[str]): The repository URL for the project.
     """
+
     name: str
     project_type: str
     tags: List[str]  # Les tags sont envoyés comme liste de chaînes de caractères
@@ -226,6 +250,7 @@ class ProjectToFront(BaseModel):
     repo : Optional[str], default=None
         The repository URL of the project.
     """
+
     pid: str
     name: str
     project_type: str

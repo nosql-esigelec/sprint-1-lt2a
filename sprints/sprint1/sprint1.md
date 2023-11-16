@@ -112,7 +112,7 @@ File to edit: `api/v1/src/services/template_service.py`
 - `read_template`: Read a template given the id. If the `user_id` is given, read it from the user collection; otherwise, read it from the template collection.
 - `list_templates`: List all the templates from the user collection if the `user_id` is given; otherwise, list all the templates from the template collection.
 - `delete_template`: Delete a template given the id. If the `user_id` is given, delete it (pull) from the user collection; otherwise, delete it from the template collection.
-- `star_template`: Mark a template as a favorite given its id and the one of the user who marked it as a favorite. 
+- `star_template`: Mark a template as a favorite given its id and the one of the user who marked it as a favorite.
 
 #### Testing
 Run the unit tests for these CRUD operations by running:

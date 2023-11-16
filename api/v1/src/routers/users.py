@@ -3,16 +3,30 @@ This module contains the routes for user management. It includes the following r
 - POST /register: creates a new user
 - POST /login: logs in a user
 - GET /: retrieves a user by username
+
+This module defines an API router that handles HTTP requests related to user management. It provides three routes:
+- POST /register: creates a new user with the provided user information.
+- POST /login: authenticates the user with the provided username and password, and returns an access token along with the user details.
+- GET /: retrieves the user with the provided username, excluding their password.
+
+This module uses FastAPI to define the routes and their corresponding functions. It also uses various utility functions and services to handle user authentication and database operations.
+"""
+"""
+This module contains the routes for user management. It includes the following routes:
+- POST /register: creates a new user
+- POST /login: logs in a user
+- GET /: retrieves a user by username
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api.v1.src.dependencies import get_mongo_db
-from api.v1.src.models.user import LoginResponse, SignUpResponse, UserLogged, UserSignUp
+from api.v1.src.models.user import (LoginResponse, SignUpResponse, UserLogged,
+                                    UserSignUp)
+from api.v1.src.services.users_service import UserService
 from api.v1.src.utils.jwttoken import create_access_token
 from api.v1.src.utils.parsing import parse_mongo_id
-from api.v1.src.services.users_service import UserService
 
 router = APIRouter()
 
@@ -77,6 +91,9 @@ def get_user(username: str):
 
     Raises:
         HTTPException: If no user is found with the given username.
+
+    Description:
+        This function retrieves a user's information by their username. It returns a dictionary containing the user's information, excluding their password. If no user is found with the given username, it raises an HTTPException with a 404 status code.
     """
     current_user = user_service.get_user_by_username(
         username, projection={"password": 0}
