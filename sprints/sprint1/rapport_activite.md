@@ -5,9 +5,9 @@
 
 ## Participants
 \[LADIBE SAMUEL
-  TEGUE YOMBI ELISEE
-  AIZANSI SYDNEY CAREL
-  AKPOVO VIGNON JEFFERSON\]
+TEGUE YOMBI ELISEE
+AIZANSI SYDNEY CAREL
+AKPOVO VIGNON JEFFERSON\]
 
 ## Objectifs du Sprint
 \[  * Objectif 1 : Découvrir, manipuler et maitriser les bases de données MongoDB 
