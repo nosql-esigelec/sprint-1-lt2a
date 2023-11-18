@@ -1,10 +1,11 @@
 import pytest
 from bson.objectid import ObjectId
 
-from api.v1.src.dependencies import get_mongo_db
+from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
 from api.v1.src.services.templates_service import TemplateService
 from api.v1.src.services.users_service import UserService
 from api.v1.src.utils.handlers import random_string
+from api.v1.tests.services.test_user_service import user_service_instance
 
 
 @pytest.fixture(scope="module")
@@ -15,14 +16,13 @@ def mongo_instance():
 
 @pytest.fixture(scope="module")
 def neo4j_instance():
-    # neo4j = get_neo4j_db()
-    # yield neo4j
-    pass
+    neo4j = get_neo4j_db()
+    yield neo4j
 
 
 @pytest.fixture(scope="module")
-def template_service_instance(mongo_instance):  # , neo4j_instance
-    return TemplateService(mongo=mongo_instance)  # , neo4j=neo4j_instance
+def template_service_instance(mongo_instance, neo4j_instance):
+    return TemplateService(mongo=mongo_instance, neo4j=neo4j_instance)
 
 
 @pytest.fixture(scope="module")
@@ -55,6 +55,13 @@ def test_create_template(template_service_instance, user_id):
             query={"_id": ObjectId((result["value"]))}, collection_name="templates"
         ).get("result")
         assert inserted_template is not None
+    template_neo4j = template_service_instance.neo4j.read(
+        tx_type="node",
+        node_label="Template",
+        properties={"template_name": template_name},
+    ).get("result")
+    assert template_neo4j is not None
+    assert template_neo4j["template_name"] == template_name
 
 
 @pytest.mark.template_service
@@ -131,6 +138,12 @@ def test_delete_template(template_service_instance):
         query={"_id": ObjectId(template_id)}, collection_name="templates"
     ).get("result")
     assert deleted_template is None
+    template_neo4j = template_service_instance.neo4j.read(
+        tx_type="node",
+        node_label="Template",
+        properties={"template_name": template_data["template_name"]},
+    ).get("result")
+    assert template_neo4j is None
 
 
 @pytest.mark.template_service
@@ -160,7 +173,7 @@ def test_delete_private_template(
     deleted_template = template_service_instance.read_template(
         template_id, user_id=user_id
     ).get("result")
-    assert deleted_template == None
+    assert deleted_template is None
 
 
 @pytest.mark.template_service
