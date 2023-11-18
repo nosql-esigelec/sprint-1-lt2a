@@ -3,22 +3,22 @@ Project routes.
 """
 from typing import Union
 from fastapi import APIRouter, HTTPException
-from src.models.project import (
+from api.v1.src.models.project import (
     ProjectInsertFields,
     ProjectUpdateFields,
     ProjectReadFields,
     ProjectFields,
 )
-from src.dependencies import get_mongo_db, get_neo4j_db
-from src.utils.parsing import parse_mongo_id
-from src.services.projects_service import ProjectService
+from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
+from api.v1.src.utils.parsing import parse_mongo_id
+from api.v1.src.services.projects_service import ProjectService
 
 router = APIRouter()
 
 mongo = get_mongo_db()
 neo4j = get_neo4j_db()
 project_service = ProjectService(mongo,
-                                #  neo4j
+                                 neo4j
                                  )
 
 
