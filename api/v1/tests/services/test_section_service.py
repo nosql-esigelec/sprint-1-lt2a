@@ -1,10 +1,9 @@
 import pytest
 from bson.objectid import ObjectId
-
-from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
+from api.v1.tests.services.test_user_service import user_service_instance
 from api.v1.src.services.sections_service import SectionService
 from api.v1.src.utils.handlers import random_string
-from api.v1.tests.services.test_user_service import user_service_instance
+from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
 
 
 @pytest.fixture(scope="module")
