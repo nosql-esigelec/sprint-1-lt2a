@@ -1,14 +1,15 @@
 """
 User routes.
 """
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from src.dependencies import get_mongo_db
-from src.models.user import LoginResponse, SignUpResponse, UserLogged, UserSignUp
-from src.utils.jwttoken import create_access_token
-from src.utils.parsing import parse_mongo_id
-from src.services.users_service import UserService
+from api.v1.src.dependencies import get_mongo_db
+from api.v1.src.models.user import (LoginResponse, SignUpResponse, UserLogged,
+                                    UserSignUp)
+from api.v1.src.services.users_service import UserService
+from api.v1.src.utils.jwttoken import create_access_token
+from api.v1.src.utils.parsing import parse_mongo_id
 
 router = APIRouter()
 

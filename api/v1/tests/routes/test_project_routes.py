@@ -1,16 +1,22 @@
 from re import T
-from fastapi.testclient import TestClient
+
 import pytest
-from tests.main_test import app  # Replace with the actual path to your FastAPI app instance
+from fastapi.testclient import TestClient
+
+from api.v1.tests.main_test import \
+    app  # Replace with the actual path to your FastAPI app instance
 
 client = TestClient(app)
 
 # Initialize this with some test data
-test_project_data = {"created_by":"653e4964f9e328a046420984",
-                     "project_name":"Dev Project New",
-                     "project_type":"Backend",
-                     "project_architecture":"Microservices",
-                     "project_tags":["sc"]}
+test_project_data = {
+    "created_by": "653e4964f9e328a046420984",
+    "project_name": "Dev Project New",
+    "project_type": "Backend",
+    "project_architecture": "Microservices",
+    "project_tags": ["sc"],
+}
+
 
 @pytest.fixture(scope="module")
 def created_project_id():
@@ -22,6 +28,8 @@ def created_project_id():
 
     # Teardown code: Delete the project
     client.delete(f"/v1/projects/{project_data['pid']}")
+
+
 # Test for POST /
 @pytest.mark.projects_routes
 def test_create_project():
@@ -31,13 +39,17 @@ def test_create_project():
     assert response.json()["project_name"] == "Dev Project New"
     assert response.json()["project_type"] == "Backend"
 
+
 # Test for GET /
 @pytest.mark.projects_routes
 def test_get_projects():
-    response = client.get("/v1/projects/", params={"user_id": "653e4964f9e328a046420984"})
+    response = client.get(
+        "/v1/projects/", params={"user_id": "653e4964f9e328a046420984"}
+    )
     assert response.status_code == 200
     assert isinstance(response.json(), list)
     assert response.json()[0]["project_name"] == "Dev Project New"
+
 
 # Test for GET /{project_id}
 @pytest.mark.projects_routes
@@ -50,6 +62,7 @@ def test_get_project(created_project_id):
     assert response.status_code == 200
     assert "package_manager" in response.json()
 
+
 # Test for PUT /{project_id}
 @pytest.mark.projects_routes
 def test_update_project(created_project_id):
@@ -58,12 +71,14 @@ def test_update_project(created_project_id):
     assert response.status_code == 200
     assert response.json()["project_name"] == "Updated Test Project"
 
+
 # Test for DELETE /{project_id}
 @pytest.mark.projects_routes
 def test_delete_project(created_project_id):
     response = client.delete(f"/v1/projects/{created_project_id}")
     assert response.status_code == 200
     assert response.json()["result"] == "success"
+
 
 # Test for GET /{project_id}/recommended-templates
 # @pytest.mark.projects_routes

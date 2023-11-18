@@ -3,18 +3,18 @@ Templates routes.
 """
 from fastapi import APIRouter, HTTPException
 
-from src.models.template import TemplateInsertFields, TemplateReadFields
-from src.dependencies import get_mongo_db, get_neo4j_db
-from src.utils.parsing import parse_mongo_id
-from src.services.templates_service import TemplateService
-
+from api.v1.src.dependencies import get_mongo_db, get_neo4j_db
+from api.v1.src.models.template import TemplateInsertFields, TemplateReadFields
+from api.v1.src.services.templates_service import TemplateService
+from api.v1.src.utils.parsing import parse_mongo_id
 
 router = APIRouter()
 mongo = get_mongo_db()
 neo4j = get_neo4j_db()
-template_service = TemplateService(mongo, 
-                                #    neo4j
-                                   )
+template_service = TemplateService(
+    mongo,
+    #    neo4j
+)
 
 
 @router.post("/", response_model=TemplateReadFields)
@@ -55,7 +55,7 @@ async def get_template_endpoint(template_id: str, user_id: str = None):
         "result"
     )
     if user_id is not None:
-        template = template['templates'][0]
+        template = template["templates"][0]
     print(f"Template: {template}")
     if user_id is None:
         template = parse_mongo_id(template, "template")
