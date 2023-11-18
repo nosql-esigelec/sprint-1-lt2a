@@ -22,8 +22,12 @@ repos:
   - id: isort
 
 
--   repo: https://github.com/pre-commit/mirrors-pylint
-    rev: 'v3.0.0a5'
+-   repo: local
     hooks:
-    - id: pylint
-      args: ['--disable=too-few-public-methods,no-self-use,import-error']
+    -   id: pylint-score-check
+        args: ['--disable=too-few-public-methods,no-self-use','--ignore=api/v1/tests/']
+        name: pylint
+        entry: ./api/pylint_score_check.sh
+        language: script
+        types: [python]
+        exclude: '^api/v1/tests/'

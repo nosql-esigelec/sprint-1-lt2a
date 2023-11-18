@@ -1,4 +1,3 @@
-# type: ignore
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,7 +7,7 @@ from api.v1.src.utils.oauth import get_current_user
 
 app = FastAPI()
 
-origins = ["http://localhost:3000", "http://172.26.0.4:3000", "http://frontend:3000"]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

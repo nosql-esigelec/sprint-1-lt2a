@@ -1,3 +1,5 @@
+# black: off
+# isort: off
 # type: ignore
 """
 This module contains the TemplateService class which is responsible for managing template operations.
@@ -7,6 +9,7 @@ It provides methods to create, read, list and delete templates from the 'templat
 import json
 import logging
 import uuid
+
 # pylint: disable=W0212
 from ast import parse
 from curses import meta  # type: ignore
@@ -17,10 +20,13 @@ from pymongo import errors
 from requests import get  # type: ignore
 
 from api.v1.src.db.mongo_db import MongoDB
-# from src.db.neo4j_db import Neo4jDB
+from api.v1.src.db.neo4j_db import Neo4jDB
 from api.v1.src.services.users_service import UserService
-from api.v1.src.utils.handlers import (build_query_sort_project,
-                                       generate_response, handle_db_operations)
+from api.v1.src.utils.handlers import (
+    build_query_sort_project,
+    generate_response,
+    handle_db_operations,
+)
 from api.v1.src.utils.parsing import parse_mongo_id
 
 
@@ -29,13 +35,9 @@ class TemplateService:
     Class to manage template operations.
     """
 
-    def __init__(
-        self,
-        mongo: MongoDB = None,
-        #  neo4j: Neo4jDB = None
-    ):
+    def __init__(self, mongo: MongoDB = None, neo4j: Neo4jDB = None):
         self.mongo = mongo
-        # self.neo4j = neo4j
+        self.neo4j = neo4j
 
     @handle_db_operations
     def create_template(self, template_data: dict):
@@ -71,6 +73,16 @@ class TemplateService:
                     "name": {"template_name": template_data["template_name"]},
                     "id": {"template_id": template_uuid},
                 }
+                template_data["tid"] = template_data.pop("template_id")
+                if self.neo4j is None:
+                    raise Exception("Neo4j instance is not set in TemplateService.")
+                else:
+                    neo4j_public_template = self.neo4j.create(
+                        tx_type="node",
+                        node_label="Template",
+                        properties=template_data,
+                        identifier=template_data["tid"],
+                    ).get("result")
             else:
                 # Add template to the 'templates' collection
                 template_data["stars"] = 0
@@ -82,11 +94,18 @@ class TemplateService:
                 ).get("result")
                 result = {"key": "_id", "value": insert_result}
                 template_data = parse_mongo_id(template_data, "template", True)
-            # TODO: Create a new template in Neo4j
-            # Example: self.neo4j.create(identifier=template_data.get('tid', ''), data=template_data)
-            # Add your Neo4j creation logic here
-
-            return result
+                # TODO: Create a new template in Neo4j
+                neo4j_public_template = self.neo4j.create(
+                    tx_type="node",
+                    node_label="Template",
+                    properties=template_data,
+                    identifier=template_data["_id"],
+                ).get("result")
+                # Add your Neo4j creation logic here
+            if neo4j_public_template:
+                return result
+            else:
+                return "Neo4j creation was not successful"
         else:
             message = f"MongoDB instance is not set."
             return message
@@ -300,10 +319,14 @@ class TemplateService:
             delete_result = template_id
 
         # TODO: Delete Template from Neo4j
-        # Example: self.neo4j.delete(template_id)
-        # Add your Neo4j deletion logic here
+        neo4j_delete_result = self.neo4j.delete(
+            tx_type="node", node_label="Template", properties={"tid": template_id}
+        ).get("result")
 
-        return delete_result if delete_result else -1
+        if neo4j_delete_result["nodes_deleted"] is not 0:
+            return delete_result if delete_result else -1
+        else:
+            return -1
 
     @handle_db_operations
     def star_template(self, user_id, template_id):

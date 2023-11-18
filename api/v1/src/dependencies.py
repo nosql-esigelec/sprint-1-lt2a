@@ -1,5 +1,4 @@
-
-#pylint: ignore=invalid-name broad-except 
+# pylint: ignore=invalid-name broad-except
 """
 This module contains functions to connect to databases.
 
@@ -15,28 +14,31 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
 from api.v1.src.db.mongo_db import MongoDB
+from api.v1.src.db.neo4j_db import Neo4jDB
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 
 load_dotenv(dotenv_path=dotenv_path)
 
-mongo_uri = os.getenv("MONGO_URI","mongodb+srv://test:test@cluster0.kucnequ.mongodb.net/?retryWrites=true&w=majority")
+mongo_uri = os.getenv(
+    "MONGO_URI",
+    "mongodb+srv://test:test@cluster0.kucnequ.mongodb.net/?retryWrites=true&w=majority",
+)
 uri = os.getenv("URI", None)
 user = os.getenv("USER", None)
 password = os.getenv("PASSWORD", None)
 
+neo4j_uri = os.getenv("NEO4J_URI", "neo4j+s://ae0d34f1.databases.neo4j.io")
+neo4j_user = os.getenv("NEO4J_USERNAME", "neo4j")
+neo4j_password = os.getenv("NEO4J_PASSWORD", "IAf5cVfL_c1isv5mjqo6HwpHugkdOAKvDb6g1NC7yHs")
+
 
 def get_neo4j_db():
-    """
-    Creates a connection to a Neo4j database.
-
-    Returns:
-        None
-    """
     # TODO(neo4j): Create Neo4j database connection.
     # You can use the Neo4jDB class for this task.
-    # Refer to Neo4j documentation
-    pass
+    # Refer to Neo4j documentation: https://neo4j.com/docs/driver-manual/current/client-applications/
+    db = Neo4jDB(neo4j_uri, neo4j_user, neo4j_password)
+    return db
 
 
 def get_mongo_db(database_name="gocod"):

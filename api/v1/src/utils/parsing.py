@@ -1,17 +1,16 @@
 from typing import List, Union, Dict
 
 
-
 def parse_mongo_id(
     data: Union[dict, list], document_type: str = "project", keep_id: bool = False
 ) -> Union[Dict, List[Dict]]:
     """
     Parse the mongo ID to the document ID.
-    
+
     Args:
         data (Union[dict, list]): The data to be parsed.
         document_type (str, optional): The document type. Defaults to "project".
-        
+
     Returns:
         Union[Dict, List[Dict]]: The parsed data.
     """
@@ -28,9 +27,16 @@ def parse_mongo_id(
     else:
         data[f"{suffix}id"] = str(data["_id"])
         data["_id"] = str(data["_id"])
-        if not keep_id:  
+        if not keep_id:
             del data["_id"]
         return data
 
+
 def format_dict_for_cypher(d: dict) -> str:
-    return '{' + ', '.join(f"{k}: '{v}'" for k, v in d.items()) + '}'
+    return (
+        "{"
+        + ", ".join(
+            f"{k}: '{v}'" if isinstance(v, str) else f"{k}: {v}" for k, v in d.items()
+        )
+        + "}"
+    )
