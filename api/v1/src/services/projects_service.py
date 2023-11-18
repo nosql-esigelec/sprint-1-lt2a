@@ -11,7 +11,7 @@ from typing import Optional
 from bson.objectid import ObjectId
 
 from api.v1.src.db.mongo_db import MongoDB
-# from src.db.neo4j_db import Neo4jDB
+from api.v1.src.db.neo4j_db import Neo4jDB
 from api.v1.src.utils.handlers import generate_response, handle_db_operations
 from api.v1.src.utils.parsing import parse_mongo_id
 
@@ -45,7 +45,7 @@ class ProjectService:
         Get recommended templates for a project.
     """
 
-    def __init__(self, mongo: MongoDB):
+    def __init__(self, mongo: MongoDB, neo4j: Neo4jDB):
         """
         Initializes a new instance of the ProjectsService class.
 
@@ -54,7 +54,7 @@ class ProjectService:
             neo4j (Neo4jDB, optional): An instance of the Neo4jDB class. Defaults to None.
         """
         self.mongo = mongo
-        # self.neo4j = neo4j
+        self.neo4j = neo4j
 
     @handle_db_operations
     def create_project(self, project_data: dict) -> str:
@@ -67,13 +67,32 @@ class ProjectService:
         Returns:
             str: The ID of the inserted project.
         """
-        if self.mongo is not None:
+        if self.mongo is not None and self.neo4j is not None:
             insert_result = self.mongo.create(project_data, "projects").get("result")
-            project_data = parse_mongo_id(project_data)  # type: ignore
+            project_data = parse_mongo_id(project_data)
             project_data["id"] = project_data["pid"]
-            return str(insert_result)
+
+            # Create Project in MongoDB
+            mongo_project_id = str(insert_result)
+
+            # Start Neo4j project creation
+            neo4j_project_data = project_data.copy()
+            neo4j_project_data["pid"] = mongo_project_id
+            neo4j_insert_result = self.neo4j.create(
+                "node",
+                node_label="Project",
+                properties=neo4j_project_data,
+                identifier="pid",
+            )
+            if neo4j_insert_result is not None:
+                return mongo_project_id
+            else:
+                return "neo4j insert result is None"
+        elif self.mongo is None:
+            message = "MongoDB instance is not set."
+            return message
         else:
-            message = f"MongoDB instance is not set."
+            message = "Neo4j instance is not set."
             return message
 
     @handle_db_operations
@@ -144,15 +163,15 @@ class ProjectService:
                     query={"_id": ObjectId(project_id)}, collection_name="projects"
                 )
 
-                if documents_deleted_count == 0:
+                # Suppression du projet dans Neo4j
+                delete_result_neo4j = self.neo4j.delete(
+                    "node", node_label="Project", properties={"pid": project_id}
+                ).get("result")
+
+                if documents_deleted_count == 0 or delete_result_neo4j is None:
                     return "No project was deleted. Check if the project ID is correct."
-
-                # TODO: Delete from Neo4j
-                # Add your logic to delete the project from Neo4j here.
-                # Example: delete_result_neo4j = self.neo4j.delete_project(project_id)
-                # Ensure to handle exceptions and errors appropriately.
-
-                return project_id
+                else:
+                    return project_id
 
             except Exception as e:
                 return f"An error occurred: {str(e)}"
@@ -211,8 +230,14 @@ class ProjectService:
         # (fixme, neo4j): Create a relationship between the project and the template.
         # You can use the `create` method of the `self.neo4j` instance to create a relationship.
         # For example: self.neo4j.create_relationship(project_id, template_id)
-        # relation = self.neo4j.create_relationship(project_id, template_id)
-        relation = "TODO"
+        relation = self.neo4j.create(
+            tx_type="relationship",
+            start_node_label="Project",
+            start_node_properties={"pid": project_id},
+            end_node_label="Template",
+            end_node_properties={"tid": template_id},
+            relation_type="SELECTED",
+        ).get("result")
         return relation
 
     @handle_db_operations
@@ -227,19 +252,21 @@ class ProjectService:
             list: A list of recommended templates.
         """
 
-        # TODO(neo4j): Get recommended templates
         def find_recommended_templates(tx, project_id):
-            # (fixme, neo4j): Implement this method to get recommended templates for a project.
-            # Write the Cypher query to get recommended templates for a project.
-            # Order the templates by the relevance score.
             query = """
-
+            MATCH (p:Project {pid: $project_id})
+            MATCH (t:Template)
+            WHERE (p.project_type IN t.template_tags) AND t.is_private = false
+            RETURN t AS template
+            ORDER BY t.stars DESC
+            LIMIT 5
             """
             params = {"project_id": project_id}
             result = tx.run(query, params)
 
-            return result.data()
+            return [record["template"] for record in result]
 
-        # templates = self.neo4j.execute_read(find_recommended_templates, project_id=project_id)
-        templates = []  # type: ignore
+        templates = self.neo4j.execute_read(
+            find_recommended_templates, project_id=project_id
+        )
         return templates

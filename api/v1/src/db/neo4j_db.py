@@ -1,6 +1,16 @@
+"""
+Neo4j database operations.
+
+This module contains the database operations for the Neo4j database.
+
+Classes:
+    Neo4jDB: A class to manage the database operations.
+
+"""
 from neo4j import GraphDatabase, Transaction
-from api.v1.src.utils.parsing import format_dict_for_cypher
+
 from api.v1.src.utils.handlers import handle_db_operations
+from api.v1.src.utils.parsing import format_dict_for_cypher
 
 
 class Neo4jDB:

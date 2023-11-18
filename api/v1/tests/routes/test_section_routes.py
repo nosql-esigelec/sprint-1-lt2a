@@ -1,12 +1,16 @@
-from cgi import test
-from operator import le
-from fastapi.testclient import TestClient
-import pytest
-from tests.main_test import (
-    app,
-)  # Replace with the actual path to your FastAPI app instance
+# black: off
+# isort: off
 import random
 import string
+from cgi import test
+from operator import le
+
+import pytest
+from fastapi.testclient import TestClient
+
+from api.v1.tests.main_test import (
+    app,
+)  # Replace with the actual path to your FastAPI app instance
 
 client = TestClient(app)
 
