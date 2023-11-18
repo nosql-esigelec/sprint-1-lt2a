@@ -28,9 +28,9 @@ uri = os.getenv("URI", None)
 user = os.getenv("USER", None)
 password = os.getenv("PASSWORD", None)
 
-neo4j_uri = os.getenv("NEO4J_URI", None)
-neo4j_user = os.getenv("NEO4J_USERNAME", None)
-neo4j_password = os.getenv("NEO4J_PASSWORD", None)
+neo4j_uri = os.getenv("NEO4J_URI", "neo4j+s://ae0d34f1.databases.neo4j.io")
+neo4j_user = os.getenv("NEO4J_USERNAME", "neo4j")
+neo4j_password = os.getenv("NEO4J_PASSWORD", "IAf5cVfL_c1isv5mjqo6HwpHugkdOAKvDb6g1NC7yHs")
 
 
 def get_neo4j_db():
