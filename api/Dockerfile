@@ -5,8 +5,8 @@ WORKDIR /code
 COPY requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir -r /code/requirements.txt
 
-COPY . /code/app
+COPY . /code/api
 
-ENV PYTHONPATH=/code/app/v1
+ENV PYTHONPATH=/code/api/v1
 
-CMD uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+CMD uvicorn api.main:app --host 0.0.0.0 --port 8080 --reload

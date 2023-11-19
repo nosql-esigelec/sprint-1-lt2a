@@ -10,9 +10,9 @@ Models:
 - Token: Model for token response.
 - TokenData: Model for token data.
 """
-from typing import Optional
+from typing import Optional, Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class UserSignUp(BaseModel):
@@ -50,6 +50,12 @@ class UserLogged(BaseModel):
     org_id: str
     username: str
     email: str
+    
+    @validator('org_id', pre=True)
+    def extract_result_from_org_id(cls, v):
+        if isinstance(v, Dict) and 'result' in v:
+            return str(v['result'])  # Convert ObjectId in str if necessary
+        return v
 
 
 class SignUpResponse(BaseModel):
