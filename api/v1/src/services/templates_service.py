@@ -19,10 +19,10 @@ from bson.objectid import ObjectId
 from pymongo import errors
 from requests import get  # type: ignore
 
-from api.v1.src.db.mongo_db import MongoDB
-from api.v1.src.db.neo4j_db import Neo4jDB
-from api.v1.src.services.users_service import UserService
-from api.v1.src.utils.handlers import (
+from src.db.mongo_db import MongoDB
+from src.db.neo4j_db import Neo4jDB
+from src.services.users_service import UserService
+from src.utils.handlers import (
     build_query_sort_project,
     generate_response,
     handle_db_operations,
@@ -323,7 +323,7 @@ class TemplateService:
             tx_type="node", node_label="Template", properties={"tid": template_id}
         ).get("result")
 
-        if neo4j_delete_result["nodes_deleted"] is not 0:
+        if neo4j_delete_result["nodes_deleted"] != 0:
             return delete_result if delete_result else -1
         else:
             return -1
