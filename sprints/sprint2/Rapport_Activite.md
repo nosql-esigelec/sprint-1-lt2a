@@ -1,17 +1,17 @@
 # Rapport d'Activité Sprint 2
 
 ## Date
-\[18/11/2023\]
+18/11/2023
 
 
 ## Participants
-\[LADIBE SAMUEL
-  TEGUE YOMBI ELISEE
-  AIZANSI SYDNEY CAREL
-  AKPOVO VIGNON JEFFERSON\]
+  LADIBE SAMUEL\
+  TEGUE YOMBI ELISEE\
+  AIZANSI SYDNEY CAREL\
+  AKPOVO VIGNON JEFFERSON
 
 ## Objectifs du Sprint
-\[  * Objectif 1 : Implémentation des opérations CRUD pour Neo4j afin de manipuler les données avec des relations de type chaîne. 
+* Objectif 1 : Implémentation des opérations CRUD pour Neo4j afin de manipuler les données avec des relations de type chaîne. 
 
 * Objectif 2 : Développement des opérations CRUD pour les sections dans le service Section. 
 
@@ -38,13 +38,13 @@ Initialement, nous avons divisé le sprint en quatre sections distinctes (part1,
  La méthodologie adoptée consistait à suivre une approche itérative, avec des réunions régulières pour assurer une synchronisation constante.
 
 ## Problèmes Rencontrés
-- \[ 
+- 
     1. Prise en Main de Neo4j : Adaptation à la manipulation des bases de données orientées graph et la logique  spécifique à Neo4j, notamment pour ceux habitués aux bases de données relationnelles.
     2. Structuration des Données : Compréhension de la meilleure façon de structurer les données dans un format non relationnel pour le service de templates.
     3. Intégration des Services : Assurer une intégration fluide du service de templates avec les autres services développés par l'équipe.\]
 
 ## Actions Correctives
-- \[    - Ressources et Formation MongoDB : Utilisation de ressources en ligne et de sessions de partage de connaissances pour accélérer la montée en compétence sur MongoDB.
+- Ressources et Formation MongoDB : Utilisation de ressources en ligne et de sessions de partage de connaissances pour accélérer la montée en compétence sur MongoDB.
 
 - Collaboration et Revues de Code : Sessions de revues de code collectives pour améliorer la compréhension de la structuration des données et assurer des pratiques de développement cohérentes.
 
