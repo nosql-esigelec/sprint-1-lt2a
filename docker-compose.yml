@@ -7,6 +7,7 @@ services:
     networks:
       gocod:
         ipv4_address: 172.30.0.3
+    env_file: ./api/.env
   frontend:
     build: ./frontend
     ports:
