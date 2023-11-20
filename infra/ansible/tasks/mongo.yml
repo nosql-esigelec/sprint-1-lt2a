@@ -1,0 +1,40 @@
+- hosts: mongo_cluster
+  become: true
+  vars:
+    mongo_username: "mongo"  
+    mongo_password: "password"  
+    mongo_data_volume: "/mongo/data"  
+
+  tasks:
+    - name: Check for existing MongoDB container
+      command: docker ps -a -q -f name=mongo
+      register: mongo_container
+      failed_when: mongo_container.rc != 0
+
+    - name: Stop existing MongoDB container
+      command: docker stop mongo
+      when: mongo_container.stdout != ""
+
+    - name: Remove existing MongoDB container
+      command: docker rm mongo
+      when: mongo_container.stdout != ""
+
+    - name: Check if port 27017 is in use
+      shell: netstat -tuln | grep ':27017'
+      register: port_check
+      ignore_errors: true
+
+    - name: Fail if port 27017 is in use by another process
+      fail:
+        msg: "Port 27017 is already in use by another process"
+      when: port_check.rc == 0 and mongo_container.stdout == ""
+
+    - name: Start MongoDB with Docker
+      shell: >
+        docker run -d --name mongo
+        -p 27017:27017
+        -e MONGO_INITDB_ROOT_USERNAME=${mongo_username}
+        -e MONGO_INITDB_ROOT_PASSWORD=${mongo_password}
+        -v ${mongo_data_volume}:/data/db
+        mongo:6 --auth
+      when: port_check.rc != 0 or mongo_container.stdout != ""

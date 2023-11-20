@@ -1,0 +1,48 @@
+# This playbook deploys a Neo4j service using Docker on an instance, exposing it on its default ports.
+# Caution: For actual deployments, ensure secure configurations beyond this basic setup.
+# TODO: Develop a robust method to install and run Neo4j, focusing on:
+# - Maintainability: The setup should be easily adaptable, allowing for updates like changing the Neo4j version or configuration.
+# - Readability: Use modularity to improve clarity and minimize code duplication, utilizing external files and variables where possible.
+# - Persistence: Ensure data retention despite container updates or replacements.
+# - Backup (Optional but recommended): Implement backup solutions, potentially leveraging GCP External disks with Terraform and scripting backups in Ansible.
+# Note: Ensure data persistence by mounting volumes for database storage.
+
+- hosts: neo4j_cluster
+  become: true
+  vars:
+    neo4j_username: "neo4j"  
+    neo4j_password: "password"
+    neo4j_data_volume: "/neo4j/data"  
+  tasks:
+    - name: Check for existing Neo4j container
+      command: docker ps -a -q -f name=neo4j
+      register: neo4j_container
+      failed_when: neo4j_container.rc != 0
+
+    - name: Stop existing Neo4j container
+      command: docker stop neo4j
+      when: neo4j_container.stdout != ""
+
+    - name: Remove existing Neo4j container
+      command: docker rm neo4j
+      when: neo4j_container.stdout != ""
+
+    - name: Check if Neo4j ports are in use
+      shell: netstat -tuln | grep -E ':7474|:7687'
+      register: port_check
+      ignore_errors: true
+
+    - name: Fail if Neo4j ports are in use by another process
+      fail:
+        msg: "Neo4j ports are already in use by another process"
+      when: port_check.rc == 0 and neo4j_container.stdout == ""
+
+    - name: Start Neo4j with Docker
+      shell: >
+        docker run -d --name neo4j
+        -p 7474:7474
+        -p 7687:7687
+        -e NEO4J_AUTH=${neo4j_username}/${neo4j_password}
+        -v ${neo4j_data_volume}:/data
+        neo4j:latest
+      when: port_check.rc != 0 or neo4j_container.stdout != ""
