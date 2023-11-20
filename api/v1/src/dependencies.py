@@ -22,15 +22,15 @@ load_dotenv(dotenv_path=dotenv_path)
 
 mongo_uri = os.getenv(
     "MONGO_URI",
-    "mongodb+srv://test:test@cluster0.kucnequ.mongodb.net/?retryWrites=true&w=majority",
+    "mongodb://mongo:password@35.205.23.101:27017",
 )
 uri = os.getenv("URI", None)
 user = os.getenv("USER", None)
 password = os.getenv("PASSWORD", None)
 
-neo4j_uri = os.getenv("NEO4J_URI", "neo4j+s://ae0d34f1.databases.neo4j.io")
+neo4j_uri = os.getenv("NEO4J_URI", "bolt://neo4j:password@23.251.138.84:7687")
 neo4j_user = os.getenv("NEO4J_USERNAME", "neo4j")
-neo4j_password = os.getenv("NEO4J_PASSWORD", "IAf5cVfL_c1isv5mjqo6HwpHugkdOAKvDb6g1NC7yHs")
+neo4j_password = os.getenv("NEO4J_PASSWORD", "password")
 
 
 def get_neo4j_db():
