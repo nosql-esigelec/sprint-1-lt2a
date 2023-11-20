@@ -1,0 +1,39 @@
+# This example demonstrates deploying a MongoDB service using Docker on an instance, exposing it on port 27017.
+# Caution: For actual IRL(In Real Life) deployments, ensure robust and secure configurations beyond this basic setup.
+# To deploy a real database, you should be more robust and safe than the current configurations.
+# TODO: Develop a robust method to install and run MongoDB, focusing on:
+# - Maintainability: The setup should be easily adaptable, allowing for updates like changing the MongoDB version or adding users.
+# - Readability: Use modularity to improve clarity and minimize code duplication, utilizing external files and variables where possible.
+# - Persistence: Ensure data retention despite configuration updates (e.g., version changes).
+# - Backup (Optional but recommended): Incorporate easy backup solutions, such as leveraging GCP External disks with Terraform and scripting backups in Ansible.
+# Note: The current setup lacks data persistence, meaning data is lost when the MongoDB instance is updated.
+- hosts: mongo_cluster
+  become: true
+  tasks:
+    - name: Check for existing MongoDB container
+      command: docker ps -a -q -f name=mongo
+      register: mongo_container
+      failed_when: mongo_container.rc != 0
+    # If there is a container, so stout is not empty then stop it
+    - name: Stop existing MongoDB container
+      command: docker stop mongo
+      when: mongo_container.stdout != ""
+    # In this same case, after stopping the container, let's remove it
+    - name: Remove existing MongoDB container
+      command: docker rm mongo
+      when: mongo_container.stdout != ""
+    
+    - name: Check if port 27017 is in use
+      shell: netstat -tuln | grep ':27017'
+      register: port_check
+      ignore_errors: true
+    # If the port is in use, it means it's not linked to the container mongo then fail
+    - name: Fail if port 27017 is in use by another process
+      fail:
+        msg: "Port 27017 is already in use by another process"
+      when: port_check.rc == 0 and mongo_container.stdout == ""
+
+    - name: Start MongoDB with Docker
+      shell: docker run -d --name mongo -p 27017:27017 mongo:6
+      when: port_check.rc != 0 or mongo_container.stdout != ""
+

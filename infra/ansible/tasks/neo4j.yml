@@ -1,0 +1,6 @@
+# TODO: Develop a robust method to install and run Neo4j, focusing on:
+# - Maintainability: The setup should be easily adaptable, allowing for updates like changing the MongoDB version or adding users.
+# - Readability: Use modularity to improve clarity and minimize code duplication, utilizing external files and variables where possible.
+# - Persistence: Ensure data retention despite configuration updates (e.g., version changes).
+# - Backup (Optional but recommended): Incorporate easy backup solutions, such as leveraging GCP External disks with Terraform and scripting backups in Ansible.
+# Note: The current setup lacks data persistence, meaning data is lost when the MongoDB instance is updated.
