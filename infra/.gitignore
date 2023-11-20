@@ -1,0 +1,10 @@
+# Terraform files
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+
+# Ansible inventory overrides
+ansible/inventory.ini
+
+# GCP Credentials
+*credentials.json
