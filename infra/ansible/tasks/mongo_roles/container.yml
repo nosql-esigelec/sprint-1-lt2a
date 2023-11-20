@@ -1,0 +1,16 @@
+# Persistance data creation or Volumes' creation
+
+- name: Docker volume creation for MongoDB
+  docker_volume:
+    name: mongo_data
+
+- name: Start MongoDB with volumes data
+  docker_container:
+    name: mongo
+    image: "mongo:{{ mongodb_version }}"
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    state: started
+    restart_policy: always

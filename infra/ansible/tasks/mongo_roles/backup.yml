@@ -1,0 +1,8 @@
+# Scheduled backup tasks configs here
+
+- name: Schedule MongoDb backups
+  cron:
+    name: "Daily backup"
+    job: "mongodump --out /var/backups/mongodb"
+    hour: 3
+    minute: 0

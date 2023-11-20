@@ -1,0 +1,4 @@
+# env variables for user creation and version handling
+mongodb_version: "6"
+mongodb_admin_user: "monAdmin"
+mongodb_admin_password: "{{ vault_mongodb_admin_password }}"

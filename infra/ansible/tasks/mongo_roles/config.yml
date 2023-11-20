@@ -1,0 +1,43 @@
+# Container provisioning
+
+    - name: Check for existing MongoDB container
+      command: docker ps -a -q -f name=mongo
+      register: mongo_container
+      failed_when: mongo_container.rc != 0
+    
+    # If there is a container, so stout is not empty then stop it
+    - name: Stop existing MongoDB container
+      command: docker stop mongo
+      when: mongo_container.stdout != ""
+    
+    # In this same case, after stopping the container, let's remove it
+    - name: Remove existing MongoDB container
+      command: docker rm mongo
+      when: mongo_container.stdout != ""
+    
+    - name: Check if port 27017 is in use
+      shell: netstat -tuln | grep ':27017'
+      register: port_check
+      ignore_errors: true
+    
+    # If the port is in use, it means it's not linked to the container mongo then fail
+    - name: Fail if port 27017 is in use by another process
+      fail:
+        msg: "Port 27017 is already in use by another process"
+      when: port_check.rc == 0 and mongo_container.stdout == ""
+
+    - name: Start MongoDB with Docker
+      shell: docker run -d --name mongo -p 27017:27017 mongo:6
+      when: port_check.rc != 0 or mongo_container.stdout != ""
+
+    #Connection verification status
+    - name: MongoDB connection verification
+      shell: |
+        mongo --eval 'db.runCommand({ connectionStatus: 1 })' -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }}
+      register: mongo_conn_status
+      ignore_errors: true
+
+    - name: Display the status of the connnection
+      debug:
+        var: mongo_conn_status.stdout
+
