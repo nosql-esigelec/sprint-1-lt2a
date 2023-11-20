@@ -6,10 +6,10 @@ resource "google_compute_firewall" "mongo_firewall_rule" {
 
   allow {
     protocol = "tcp"
-    ports    = "TO COMPLETE" # Port Management
+    ports    = ["27017"] # Port Management
   }
 
-  source_ranges = "TO COMPLETE" # IP Whitelisting
+  source_ranges = ["0.0.0.0/0"] # IP Whitelisting
   target_tags   = ["http-server","https-server"] # Firewall rule applies only to instances with this tag
 }
 
@@ -18,7 +18,7 @@ resource "google_compute_instance" "mongo_node" {
   count        = var.num_nodes # the number of instances to provision
   name         = "mongo-node-${count.index}"
   machine_type = "e2-medium" # machine type of each node
-  zone         = "TO COMPLETE" # The instance zone(not the region)
+  zone         = "europe-west9-b" # The instance zone(not the region)
   tags         = ["http-server","https-server"] # Tags to connect instances to internet
   boot_disk {
     initialize_params {
@@ -40,6 +40,6 @@ resource "google_compute_instance" "mongo_node" {
                               sudo passwd -d ${var.username}
                               EOF
     metadata = {
-    ssh-keys = "TO COMPLETE:${file(var.public_key_path) }"
+    ssh-keys = "${var.username}:${file(var.public_key_path) }"
   }
 }
