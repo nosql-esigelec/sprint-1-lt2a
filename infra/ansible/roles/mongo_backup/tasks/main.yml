@@ -1,5 +1,5 @@
 # Scheduled backup tasks configs here
-
+---
 - name: Schedule MongoDb backups
   cron:
     name: "Daily backup"
