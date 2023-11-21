@@ -10,6 +10,9 @@
 ---
 - hosts: mongo_cluster
   become: true
+  vars_files:
+    - vars/main.yml
+    - vars/vault.yml
   roles:
     - mongo_container
     - mongo_config

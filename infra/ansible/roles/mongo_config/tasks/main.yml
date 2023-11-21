@@ -19,6 +19,7 @@
   shell: netstat -tuln | grep ':27017'
   register: port_check
   ignore_errors: true
+  failed_when: port_check.rc == 0
 
 # If the port is in use, it means it's not linked to the container mongo then fail
 - name: Fail if port 27017 is in use by another process
@@ -33,7 +34,7 @@
 # Connection verification status
 - name: MongoDB connection verification
   shell: |
-    mongo --eval 'db.runCommand({ connectionStatus: 1 })' -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }}
+    docker exec -it mongo mongo --eval 'db.runCommand({ connectionStatus: 1 })' -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }}
   register: mongo_conn_status
   ignore_errors: true
 

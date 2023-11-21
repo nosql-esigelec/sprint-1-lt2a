@@ -1,5 +1,6 @@
-# This set of tasks is for installing and runing docker. 
-#The user mongoadmin is added to the docker group and has permission to run docker without sudo.
+# This set of tasks is for installing and runing docker.
+# The user mongoadmin is added to the docker group and has permission to run docker without sudo.
+---
 - hosts: mongo_cluster
   become: true
   tasks:
@@ -45,7 +46,7 @@
     - name: Add remote "debian" user to "docker" group
       user:
         name: "mongoadmin"
-        groups: 
+        groups:
           - "docker"
         append: yes
     - name: Start the docker service
@@ -55,6 +56,6 @@
         enabled: yes
   handlers:
     - name: restart docker
-      service: 
-        name: docker 
+      service:
+        name: docker
         state: restarted
