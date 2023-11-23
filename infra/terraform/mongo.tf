@@ -14,9 +14,14 @@ resource "google_compute_firewall" "mongo_firewall_rule" {
 }
 
 #DNS name configuration
+resource "google_dns_managed_zone" "mongodb_zone" {
+  name     = "mongodb-zone"
+  dns_name = "mongodb.gocod-esig-lt2a.com."  # Assurez-vous que ceci correspond à votre domaine DNS
+
+}
 
 resource "google_dns_record_set" "mongodb_node_0" {
-  name         = "mongo-node-0.mongodb.lt2a.com"
+  name         = "mongo-node-0.mongodb.gocod-esig-lt2a.com"
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.mongodb_zone.name
@@ -24,18 +29,18 @@ resource "google_dns_record_set" "mongodb_node_0" {
 }
 
 resource "google_dns_record_set" "mongodb_node_1" {
-  name         = "mongo-node-1.mongodb.lt2a.com"
+  name         = "mongo-node-1.mongodb.gocod-esig-lt2a.com"
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.mongodb_zone.name
-  rrdatas      = ["34.163.241.16 "]  # Remplacer par l'adresse IP du deuxième nœud
+  rrdatas      = ["34.163.241.16"]  # Remplacer par l'adresse IP du deuxième nœud
 }
 
 # Hard disk creation for backup
 resource "google_compute_disk" "mongodb_disk" {
   name  = "mongodb-disk"
   type  = "pd-ssd"
-  zone  = "europe-west9"
+  zone  = "europe-west9-c"
   size  = 10
 }
 

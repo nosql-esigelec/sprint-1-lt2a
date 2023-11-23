@@ -28,16 +28,9 @@
   when: port_check.rc == 0 and mongo_container.stdout == ""
 
 - name: Start MongoDB with Docker
-  shell: docker run -d --name mongo -p 27017:27017 mongo:6
-  when: port_check.rc != 0 or mongo_container.stdout != ""
-
-# Connection verification status
-- name: MongoDB connection verification
   shell: |
-    docker exec -it mongo mongo --eval 'db.runCommand({ connectionStatus: 1 })' -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }}
-  register: mongo_conn_status
-  ignore_errors: true
-
-- name: Display the status of the connnection
-  debug:
-    var: mongo_conn_status.stdout
+    docker run -d --name mongo \
+    -e MONGO_INITDB_ROOT_USERNAME={{ mongodb_admin_user }} \
+    -e MONGO_INITDB_ROOT_PASSWORD={{ mongodb_admin_password }} \
+    -p 27017:27017 mongo:6
+  when: port_check.rc != 0 or mongo_container.stdout != ""
