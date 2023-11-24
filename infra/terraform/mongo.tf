@@ -54,9 +54,9 @@ resource "google_compute_instance" "mongo_node" {
 resource "google_compute_disk" "mongo_disk" {
   count = var.num_nodes
   name = "mongo-disk-${count.index}"
-  type = "pd-ssd"
+  type = "pd-standard"
   zone = "europe-west1-b"
-  size = 10 # specify the size of the disk in GB
+  size = 5 # specify the size of the disk in GB
   labels = {
     environment = "dev"
   }
