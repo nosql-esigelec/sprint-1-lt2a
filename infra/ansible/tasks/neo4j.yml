@@ -30,6 +30,7 @@
     - name: Check if Neo4j ports are in use
       shell: netstat -tuln | grep -E ':7474|:7687'
       register: port_check
+      failed_when: port_check.rc == 0
       ignore_errors: true
 
     - name: Fail if Neo4j ports are in use by another process
@@ -37,12 +38,25 @@
         msg: "Neo4j ports are already in use by another process"
       when: port_check.rc == 0 and neo4j_container.stdout == ""
 
+    - name: Ensure Neo4j data directory exists
+      file:
+        path: "{{ neo4j_data_volume }}"
+        state: directory
+        mode: '0777'
+      become: true
+
     - name: Start Neo4j with Docker
-      shell: >
-        docker run -d --name neo4j
-        -p 7474:7474
-        -p 7687:7687
-        -e NEO4J_AUTH=${neo4j_username}/${neo4j_password}
-        -v ${neo4j_data_volume}:/data
+      shell: |
+        docker run --name=neo4j --detach \
+        --publish=7474:7474 --publish=7687:7687 \
+        --volume="{{ neo4j_data_volume }}":/data \
+        --env NEO4J_AUTH="{{ neo4j_username }}/{{ neo4j_password }}" \
+        --env NEO4J_dbms_default__listen__address=0.0.0.0 \
+        --env NEO4J_dbms_default__advertised__address="{{ ansible_host }}" \
+        --env NEO4J_dbms_connector_bolt_listen__address=0.0.0.0:7687 \
+        --env NEO4J_dbms_connector_http_listen__address=0.0.0.0:7474 \
+        --env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes \
+        --restart unless-stopped \
         neo4j:latest
       when: port_check.rc != 0 or neo4j_container.stdout != ""
+
