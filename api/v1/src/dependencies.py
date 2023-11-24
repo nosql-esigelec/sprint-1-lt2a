@@ -22,13 +22,13 @@ load_dotenv(dotenv_path=dotenv_path)
 
 mongo_uri = os.getenv(
     "MONGO_URI",
-    "mongodb://mongo:password@35.205.23.101:27017",
+    "mongodb://mongo:password@34.76.255.124:27017/?retryWrites=true&w=majority",
 )
-uri = os.getenv("URI", None)
-user = os.getenv("USER", None)
-password = os.getenv("PASSWORD", None)
+uri = os.getenv("URI", "mongodb://mongo:password@34.76.255.124:27017/?retryWrites=true&w=majority")
+user = os.getenv("USER", "mongo")
+password = os.getenv("PASSWORD", "password")
 
-neo4j_uri = os.getenv("NEO4J_URI", "bolt://neo4j:password@23.251.138.84:7687")
+neo4j_uri = os.getenv("NEO4J_URI", "bolt://34.79.197.183:7687")
 neo4j_user = os.getenv("NEO4J_USERNAME", "neo4j")
 neo4j_password = os.getenv("NEO4J_PASSWORD", "password")
 
