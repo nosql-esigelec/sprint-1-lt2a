@@ -20,8 +20,9 @@
       when: mongo_container.stdout != ""
 
     - name: Check if port 27017 is in use
-      shell: netstat -tuln | grep ':27017'
+      shell: netstat -tuln | grep -E ':27017'
       register: port_check
+      failed_when: port_check.rc == 0
       ignore_errors: true
 
     - name: Fail if port 27017 is in use by another process
@@ -29,12 +30,19 @@
         msg: "Port 27017 is already in use by another process"
       when: port_check.rc == 0 and mongo_container.stdout == ""
 
+    - name: Ensure MongoDB data directory exists
+      file:
+        path: "{{ mongo_data_volume }}"
+        state: directory
+        mode: '0777'
+      become: true
+
     - name: Start MongoDB with Docker
       shell: >
-        docker run -d --name mongo
-        -p 27017:27017
-        -e MONGO_INITDB_ROOT_USERNAME=${mongo_username}
-        -e MONGO_INITDB_ROOT_PASSWORD=${mongo_password}
-        -v ${mongo_data_volume}:/data/db
-        mongo:6 --auth
+        docker run -d --name mongo \
+        -p 27017:27017 \
+        -e MONGO_INITDB_ROOT_USERNAME="{{ mongo_username }}" \
+        -e MONGO_INITDB_ROOT_PASSWORD="{{ mongo_password }}" \
+        --volume="{{ mongo_data_volume }}":/data \
+        mongo:6 --auth 
       when: port_check.rc != 0 or mongo_container.stdout != ""
