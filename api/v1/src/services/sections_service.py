@@ -134,6 +134,7 @@ class SectionService:
             question_dict = dict(question["end"].items())
             questions_processed.append(question_dict)
 
+        questions_processed.reverse()
         return questions_processed
 
     def get_next_questions(self, question_id: str, option_text: str) -> list:
@@ -173,6 +174,7 @@ class SectionService:
                 many=True,
             ).get("result")
             extracted_options = [option["end"] for option in options]
+            extracted_options.reverse()
             question_dict["options"] = extracted_options
             questions_processed.append(question_dict)
         return questions_processed
