@@ -31,7 +31,7 @@ update_ansible_inventory() {
 cd terraform
 sed -i "s/username = \"username_to_replace\"/username = \"${USERNAME}\"/" environments/$ENVIRONMENT.tfvars
 terraform init
-terraform apply -auto-approve -var-file="environments/$ENVIRONMENT.tfvars"
+terraform apply -var-file="environments/$ENVIRONMENT.tfvars"
 
 # Capture output IPs from Terraform
 mongo_ips=$(terraform output -json mongo_instance_ips | jq -r '.[]')
