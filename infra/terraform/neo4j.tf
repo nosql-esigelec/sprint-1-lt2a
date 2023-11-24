@@ -55,9 +55,9 @@ resource "google_compute_instance" "neo4j_node" {
 resource "google_compute_disk" "neo4j_disk" {
   count = var.num_nodes
   name = "neo4j-disk-${count.index}"
-  type = "pd-ssd"
+  type = "pd-standard"
   zone = "europe-west1-b"
-  size = 10 # specify the size of the disk in GB
+  size = 5 # specify the size of the disk in GB
   labels = {
     environment = "dev"
   }
