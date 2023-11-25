@@ -1,4 +1,3 @@
-# TODO: Complete this terraform file to setup the right configurations
 
 resource "google_compute_firewall" "mongo_firewall_rule" {
   name    = "mongo-allow-specific-ips-on-ports"
