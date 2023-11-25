@@ -1,4 +1,3 @@
-# TODO: Complete this terraform file to setup the right configurations
 
 resource "google_compute_firewall" "neo4j_firewall_rule" {
   name    = "neo4j-allow-specific-ips-on-ports"
