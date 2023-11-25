@@ -1,3 +1,27 @@
+"""
+This module contains a list of templates with their details, such as name, URL, description, tags, and recommendations.
+
+Each template is represented as a dictionary with the following keys:
+- 'created_by': The ID of the user who created the template.
+- 'is_private': A boolean indicating whether the template is private or not.
+- 'template_name': The name of the template.
+- 'template_url': The URL of the template repository.
+- 'template_description': A description of the template.
+- 'template_tags': A list of tags associated with the template.
+- 'recommended_by': A list of recommendations for the template.
+- 'template_tree': A string representation of the directory structure of the template.
+
+The 'template_tree' key contains a multi-line string that represents the directory structure of the template. Each line represents a file or directory in the structure.
+
+Example usage:
+    for template in templates:
+        print(template['template_name'])
+        print(template['template_description'])
+        print(template['template_tags'])
+        print(template['recommended_by'])
+        print(template['template_tree'])
+"""
+
 admin_id = "653e4964f9e328a046420984"
 is_private = False
 templates = [
@@ -57,7 +81,7 @@ templates = [
 
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Cookiecutter Django',
             'template_url': 'https://github.com/pydanny/cookiecutter-django',
             'template_description': 'A bleeding edge Django project template with Bootstrap 5, customizable users app, starter templates, working user registration, celery setup, and much more.',
@@ -66,7 +90,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Cookiecutter Django Vue',
             'template_url': 'https://github.com/vchaptsev/cookiecutter-django-vue',
             'template_description': 'Cookiecutter Django Vue is a template for Django-Vue-Bootstrap projects.',
@@ -75,7 +99,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Wagtail Cookiecutter Foundation',
             'template_url': 'https://github.com/chrisdev/wagtail-cookiecutter-foundation',
             'template_description': 'A cookiecutter template for Wagtail CMS was built using Zurb Foundation front-end framework.',
@@ -84,7 +108,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Wemake Django Template',
             'template_url': 'https://github.com/wemake-services/wemake-django-template',
             'template_description': 'Bleeding edge django4.2 template focused on code quality and security.',
@@ -93,7 +117,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Full Stack Fastapi Postgresql',
             'template_url': 'https://github.com/tiangolo/full-stack-fastapi-postgresql',
             'template_description': 'Full stack, modern web application generator. Using FastAPI, PostgreSQL as database, Docker, automatic HTTPS and more.',
@@ -101,10 +125,9 @@ templates = [
             'recommended_by':['FastAPI', 'PostgreSQL', 'Full-Stack', 'Frontend','Backend', 'Vue.js', 'TypeScript'],
             'template_tree':""
             
-       
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Kotlin Android Mvvm Starter',
             'template_url': 'https://github.com/ribot/android-starter',
             'template_description': 'A Kotlin Android MVVM Starter template.',
@@ -114,7 +137,7 @@ templates = [
             
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Swift Framework Template',
             'template_url': 'https://github.com/sbertix/Swift-Framework-Template',
             'template_description': 'A template for new Swift Framework.',
@@ -123,7 +146,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Cookiecutter Golang',
             'template_url': 'https://github.com/lacion/cookiecutter-golang',
             'template_description': 'A Go application Dockerized cookiecutter template with batteries included.',
@@ -132,7 +155,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Cookiecutter Flask',
             'template_url': 'https://github.com/cookiecutter-flask/cookiecutter-flask',
             'template_description': 'A Flask template for cookiecutter. (Supports Python ≥ 3.8)',
@@ -141,7 +164,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Cookiecutter Flask Restful',
             'template_url': 'https://github.com/karec/cookiecutter-flask-restful',
             'template_description': 'Flask cookiecutter template for builing APIs with flask-restful, including JWT auth, cli, tests, swagger, docker and more',
@@ -150,7 +173,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'Flask Empty',
             'template_url': 'https://github.com/italomaia/flask-empty',
             'template_description': 'Flask-Empty is a simple flask boilerplate for fast prototyping. Just use cookiecutter and create a new project in no time.',
@@ -159,7 +182,7 @@ templates = [
             'template_tree':""
         },
         {'created_by': admin_id,
-         'is_private': is_private,
+        'is_private': is_private,
             'template_name': 'FastAPI + React',
             'template_url': 'https://github.com/Buuntu/fastapi-react',
             'template_description': 'A cookiecutter template for bootstrapping a FastAPI and React project using a modern stack.',
@@ -168,7 +191,7 @@ templates = [
             'template_tree':""
         },
     {'created_by': admin_id,
-     'is_private': is_private,
+    'is_private': is_private,
         'template_name': 'Cookiecutter Pylibrary',
         'template_url': 'https://github.com/ionelmc/cookiecutter-pylibrary',
         'template_description': 'Enhanced template for Python libraries',
@@ -177,7 +200,7 @@ templates = [
             'template_tree':""
     },
     {'created_by': admin_id,
-     'is_private': is_private,
+    'is_private': is_private,
         'template_name': 'Cookiecutter Pypackage',
         'template_url': 'https://github.com/audreyfeldroy/cookiecutter-pypackage',
         'template_description': 'A Python package template',
@@ -186,7 +209,7 @@ templates = [
             'template_tree':""
     },
     {'created_by': admin_id,
-     'is_private': is_private,
+    'is_private': is_private,
         'template_name': 'Cookiecutter Pytest Plugin',
         'template_url': 'https://github.com/pytest-dev/cookiecutter-pytest-plugin',
         'template_description': 'Minimal template for authoring pytest plugins that help you to write better programs',
@@ -195,7 +218,7 @@ templates = [
             'template_tree':""
     },
     {'created_by': admin_id,
-     'is_private': is_private,
+    'is_private': is_private,
         'template_name': 'Hatch',
         'template_url': 'https://github.com/pypa/hatch',
         'template_description': 'A modern project, package, and virtual environment manager for Python',
@@ -204,7 +227,7 @@ templates = [
             'template_tree':""
     },
     {'created_by': admin_id,
-     'is_private': is_private,
+    'is_private': is_private,
         'template_name': 'Python Package Template',
         'template_url': 'https://github.com/TezRomacH/python-package-template',
         'template_description': 'Project structure for your next Python package with state-of-the-art libraries and best development practices',
@@ -213,7 +236,7 @@ templates = [
             'template_tree':""
     },
     {'created_by': admin_id,
-     'is_private': is_private,
+    'is_private': is_private,
         'template_name': 'Template Python',
         'template_url': 'https://github.com/jacebrowning/template-python',
         'template_description': 'A template for new Python libraries',

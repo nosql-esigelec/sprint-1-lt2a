@@ -1,3 +1,8 @@
+"""
+This script is responsible for ingesting data into the database.
+It clears the existing data, creates indexes, and inserts new data.
+"""
+
 from api.v1.src.db.ingestion.data.options import options
 from api.v1.src.db.ingestion.data.questions import questions
 from api.v1.src.db.ingestion.data.sections import sections

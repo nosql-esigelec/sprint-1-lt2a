@@ -1,3 +1,16 @@
+"""
+This file contains a list of questions used for data ingestion. Each question is represented as a dictionary with the following keys:
+- 'statement': The statement or prompt for the question.
+- 'id': The unique identifier for the question.
+- 'question_type': The type of question (e.g., 'text', 'chips', 'multiselect', 'select', 'statement').
+- 'is_first': Indicates whether the question is the first question in its section.
+- 'required': Indicates whether the question is required to be answered.
+- 'section_id': The identifier for the section that the question belongs to.
+- 'order': The order in which the question should be displayed within its section.
+- 'depends_on': (Optional) The identifier of the question that this question depends on.
+- 'value': (Optional) The possible values for the question (used for 'chips', 'multiselect', and 'select' question types).
+"""
+
 questions = [
             {
             'statement': 'Project Name',
@@ -63,7 +76,6 @@ questions = [
             'order': 3,
             'depends_on': 'project_type',
             'value': ['Backend Services', 'API Development','Data Science', 'Android App', 'iOS App']
-          
         },
         {
             'statement': 'Which back-end framework are you interested in? ',
@@ -75,7 +87,6 @@ questions = [
             'order': 3,
             'depends_on': 'project_type',
             'value': ['Backend','Full-Stack']
-          
         },
         {
             'statement': 'Which front-end framework are you interested in?',

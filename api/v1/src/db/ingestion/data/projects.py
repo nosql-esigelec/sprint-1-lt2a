@@ -1,3 +1,14 @@
+"""
+This file contains data related to projects and their relations.
+
+projects:
+    A list of dictionaries representing different projects. Each project has an 'id', 'name', and 'description'.
+
+project_relations:
+    A list of dictionaries representing the relations between projects and various sections/questions/options.
+    Each relation has a 'project_id', 'section_id', 'question_id', and 'option_text'.
+"""
+
 projects = [
     {
     'id': 'project1',

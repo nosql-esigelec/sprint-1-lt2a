@@ -1,5 +1,19 @@
+"""
+This module contains a list of sections with their respective attributes.
+
+The `sections` list contains dictionaries, where each dictionary represents a section.
+Each section has the following attributes:
+- `id`: The unique identifier of the section.
+- `name`: The name of the section.
+- `order`: The order in which the section should be displayed.
+- `description`: A description of the section.
+- `is_conditional`: A boolean value indicating whether the section is conditional or not.
+
+The `sections` list can be used to define the structure and attributes of sections in an application or form.
+"""
+
 sections = [
-           {
+        {
             'id': 'project_info',
             'name': 'Project Information',
             'order': 1,
@@ -20,7 +34,6 @@ sections = [
             'description': 'Select your primary development language.',
             'is_conditional': False
         },
- 
         {
             'id': "frameworks",
             'name': 'Frameworks',

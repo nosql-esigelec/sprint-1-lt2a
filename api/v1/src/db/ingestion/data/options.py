@@ -1,28 +1,34 @@
 
+"""
+This file contains a list of options used for configuration in a project.
+Each option is represented as a dictionary with various properties such as text, default value, question ID, tags, applicable languages, applicable project types, and more.
+These options can be used to customize the behavior and features of a project.
+"""
+
 options =[
         {
-      "text": "Monolithic",
-      "is_default": True,
-      "question_id": "project_architecture",
-      "tags": ["Monolithic", "Single Codebase", "Simplicity"]
+    "text": "Monolithic",
+    "is_default": True,
+    "question_id": "project_architecture",
+    "tags": ["Monolithic", "Single Codebase", "Simplicity"]
     },
     {
-      "text": "Microservices",
-      "is_default": False,
-      "question_id": "project_architecture",
-      "tags": ["Microservices", "Scalability", "Decoupling"]
+    "text": "Microservices",
+    "is_default": False,
+    "question_id": "project_architecture",
+    "tags": ["Microservices", "Scalability", "Decoupling"]
     },
     {
-      "text": "Serverless",
-      "is_default": False,
-      "question_id": "project_architecture",
-      "tags": ["Serverless", "Event-driven", "Cost-Effective"]
+    "text": "Serverless",
+    "is_default": False,
+    "question_id": "project_architecture",
+    "tags": ["Serverless", "Event-driven", "Cost-Effective"]
     },
     {
-      "text": "Event-Driven",
-      "is_default": False,
-      "question_id": "project_architecture",
-      "tags": ["Event-Driven", "Asynchronous", "Scalability"]
+    "text": "Event-Driven",
+    "is_default": False,
+    "question_id": "project_architecture",
+    "tags": ["Event-Driven", "Asynchronous", "Scalability"]
     },
         {
             'text': 'Python',
