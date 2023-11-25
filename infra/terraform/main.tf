@@ -1,4 +1,3 @@
-#hint: Don't hesitate to inspire yourself from this file to fill the TO COMPLETE tags in the mongodb files and to create neo4j instances
 provider "google" {
   credentials = file(var.credentials)
   project     = var.project
