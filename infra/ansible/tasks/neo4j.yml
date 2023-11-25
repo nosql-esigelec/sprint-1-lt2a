@@ -1,11 +1,4 @@
 # This playbook deploys a Neo4j service using Docker on an instance, exposing it on its default ports.
-# Caution: For actual deployments, ensure secure configurations beyond this basic setup.
-# TODO: Develop a robust method to install and run Neo4j, focusing on:
-# - Maintainability: The setup should be easily adaptable, allowing for updates like changing the Neo4j version or configuration.
-# - Readability: Use modularity to improve clarity and minimize code duplication, utilizing external files and variables where possible.
-# - Persistence: Ensure data retention despite container updates or replacements.
-# - Backup (Optional but recommended): Implement backup solutions, potentially leveraging GCP External disks with Terraform and scripting backups in Ansible.
-# Note: Ensure data persistence by mounting volumes for database storage.
 
 - hosts: neo4j_cluster
   become: true
