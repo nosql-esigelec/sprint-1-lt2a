@@ -6,10 +6,10 @@
 [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/el-tegy/pycounts_ja2327072339/pycounts_ja2327072339/blob/master/.pre-commit-config.yaml)
 [![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/el-tegy/pycounts_ja2327072339/pycounts_ja2327072339/releases)
 [![License](https://img.shields.io/github/license/el-tegy/pycounts_ja2327072339)](https://github.com/nosql-esigelec/sprint-1-lt2a/blob/main/LICENSE)
-![Coverage Report](api/v1/assets/images/coverage.svg)
+![Coverage Report](../../assets/images/coverage.svg)
 
 
-![Team members](api/v1/assets/images/team_members.svg)
+![Team members](../../assets/images/team_members.svg)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-by-developers.svg)](https://forthebadge.com)
