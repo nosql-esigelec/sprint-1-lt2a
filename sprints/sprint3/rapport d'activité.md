@@ -39,7 +39,7 @@ LADIBE SAMUEL\
 - **Défi** : Problèmes de commandes de shell mongo
   - **Solution** : Documentation sur l'utilisation de l'image mongodb et application de la commande shell `mongosh` pour les version 4+ et récentes.
 - **Défi** : Gestion de la configuration de deux ports pour la base de données Neo4J
-  - **Solution** : 
+  - **Solution** : ajout des variables d'environnement au démarrage du conteneur pour configurer les adresses ip de connexion bolt et http à chacun des nodes neo4j et aussi la plage d'adresses autorisées à interroger la BD neo4j  
 
 #### 5. Retours d'Expérience et Apprentissages
 - Importance de la planification détaillée pour la gestion des ressources cloud.
