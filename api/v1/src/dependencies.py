@@ -28,15 +28,18 @@ uri = os.getenv("URI", "mongodb://mongo:password@34.76.255.124:27017/?retryWrite
 user = os.getenv("USER", "mongo")
 password = os.getenv("PASSWORD", "password")
 
-neo4j_uri = os.getenv("NEO4J_URI", "bolt://34.79.197.183:7687")
+neo4j_uri = os.getenv("NEO4J_URI", "bolt://35.205.122.100:7687")
 neo4j_user = os.getenv("NEO4J_USERNAME", "neo4j")
 neo4j_password = os.getenv("NEO4J_PASSWORD", "password")
 
 
 def get_neo4j_db():
-    # TODO(neo4j): Create Neo4j database connection.
-    # You can use the Neo4jDB class for this task.
-    # Refer to Neo4j documentation: https://neo4j.com/docs/driver-manual/current/client-applications/
+    """
+    Get the Neo4j database connection.
+
+    Returns:
+        Neo4jDB: The Neo4j database connection object.
+    """
     db = Neo4jDB(neo4j_uri, neo4j_user, neo4j_password)
     return db
 
