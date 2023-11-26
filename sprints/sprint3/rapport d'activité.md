@@ -50,10 +50,6 @@ LADIBE SAMUEL\
 - Intégration continue et déploiement continu (CI/CD) pour automatiser davantage les processus de mise à jour.
 - Renforcement des mesures de sécurité, notamment par la mise en place de groupes de sécurité plus restrictifs et le chiffrement des données.
 
-#### 7. Annexes
-- Captures d'écran de l'interface GCP montrant les ressources déployées.
-- Extraits de code des modules Terraform et des playbooks Ansible.
-
 ---
 
 #### Conclusion
