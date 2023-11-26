@@ -79,7 +79,7 @@ This project simulated the challenges of a real working environment, where we ha
 
 More specifically, our GCP infrastructure consists of: 
 
-- A `google_compute_firewall`: to define rules that allow or deny traffic to and from our virtual machine instances in a Google Compute Engine network,
+- A `google_compute_firewall` to define rules that allow or deny traffic to and from our virtual machine instances in a Google Compute Engine network,
 - 02 `google_compute_instances` for MongoDB, 
 - 02 `google_compute_instances` for Neo4J DB,
 - A `google_compute_disk` (external storage) for each of our VMs : which is a persistent disk resource in Google Cloud making us able to persist data beyond the life of an instance (unlike ephemeral storage which is deleted when an instance is terminated),
@@ -94,14 +94,14 @@ git clone https://github.com/nosql-esigelec/sprint-1-lt2a
 ```
 
 
-- Then have to ask access to the Mongo and Neo4j databases to the team members by mailing `eliseetegue@gmail` for example. 
+- Then have to ask access to the Mongo and Neo4j databases to the team members by mailing `eliseetegue@gmail.com` for example. 
 
 - Once you have been granted access, you'll probably want to see databases data. To do that, you have to :
   - Download [MongoDB Compass](https://downloads.mongodb.com/compass/mongodb-compass-1.40.4-win32-x64.exe) and install it locally,
   - Download [Neo4j Desktop](https://neo4j.com/download/) and install it locally. 
 
 - Create new remote connection in MongoDB Compass and Neo4j Desktop using those URIs and the credentials given by this project team members ONLY 
-  - MongoDB: `mongodb://mongo:password@34.76.255.124:27017/?retryWrites=true&w=majority`
+  - MongoDB: `mongodb://<your_username>:<your_password>@34.76.255.124:27017/?retryWrites=true&w=majority`
   - Neo4j : `bolt://35.205.122.100:7687`
 
 **WARNING:** before connecting to the databases instances, make sure the GCP VM instances are up and running.
